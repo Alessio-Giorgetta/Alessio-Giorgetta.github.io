@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Research · Alessio Giorgetta</title>
+<meta name="description" content="Pre-PhD research projects by Alessio Giorgetta: discrimination in Italian school bureaucracy, electricity grid congestion forecasting, and macroeconomic uncertainty.">
+
+<meta property="og:type" content="profile">
+<meta property="og:title" content="Research · Alessio Giorgetta">
+<meta property="og:description" content="Pre-PhD research projects in labor, public and macro economics.">
+<meta property="og:url" content="https://www.alessiogiorgetta.com/research.html">
+<meta property="og:image" content="https://www.alessiogiorgetta.com/assets/photo.jpg">
+<meta name="twitter:card" content="summary">
+
+<script>
+  // Resolve the theme before the first paint so the page never flashes the wrong one.
+  (function () {
+    var saved = localStorage.getItem('theme');
+    var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.dataset.theme = saved || (prefersDark ? 'dark' : 'light');
+  })();
+</script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<a class="skip" href="#research-body">Skip to content</a>
+
+<header class="masthead">
+  <img class="portrait" src="assets/photo.jpg" alt="Alessio Giorgetta">
+  <div class="identity">
+    <h1><a class="plain" href="index.html">Alessio Giorgetta</a></h1>
+    <p class="role">PhD Student in Economics</p>
+    <p class="affil"><a class="quiet" href="https://economics.stanford.edu">Stanford University</a></p>
+    <p class="contact-line">
+      <a href="mailto:alessiog@stanford.edu">alessiog@stanford.edu</a>
+      <span aria-hidden="true">·</span>
+      <a href="tel:+393707085826">+39&nbsp;370&nbsp;7085826</a>
+      <span aria-hidden="true">·</span>
+      <a href="https://github.com/Alessio-Giorgetta">GitHub</a>
+    </p>
+  </div>
+</header>
+
+<nav aria-label="Sections">
+  <a href="index.html">About</a>
+  <a href="research.html" aria-current="page">Research</a>
+  <a href="cv.html">CV</a>
+  <a href="personal.html">Elsewhere</a>
+  <button class="theme-toggle" type="button" aria-label="Switch colour theme" title="Switch colour theme">
+    <svg class="icon-moon" viewBox="0 0 24 24" width="17" height="17" aria-hidden="true">
+      <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>
+    </svg>
+    <svg class="icon-sun" viewBox="0 0 24 24" width="17" height="17" aria-hidden="true">
+      <circle cx="12" cy="12" r="4.2"/>
+      <path d="M12 1.8v2.4M12 19.8v2.4M4.6 4.6l1.7 1.7M17.7 17.7l1.7 1.7M1.8 12h2.4M19.8 12h2.4M4.6 19.4l1.7-1.7M17.7 6.3l1.7-1.7"/>
+    </svg>
+  </button>
+</nav>
+
+<main id="research-body">
+
+<div class="page-head">
+  <div>
+    <h2 class="page-title">Research</h2>
+  </div>
+</div>
+
+<h3 class="subhead">Pre-PhD Projects</h3>
+<p class="proj-note">Some work done before starting the PhD!</p>
+
+<article class="project">
+  <div class="proj-figure">
+    <img src="assets/figures/bureaucracy.png"
+         alt="Bar chart of one-week response rates by sender alias: control group 0.81, French signature 0.75, Arabic signature 0.78, with 95% confidence intervals.">
+  </div>
+  <div class="proj-body">
+    <h4>Do School Bureaucrats Discriminate against Foreigners? Experimental Evidence from Italy</h4>
+    <p class="proj-venue">MSc thesis, University of Bologna</p>
+    <div class="chips">
+      <button class="chip" type="button" aria-expanded="false" aria-controls="abs-bureaucracy">Abstract</button>
+      <a class="chip" href="assets/papers/Giorgetta_School_Bureaucrats.pdf">PDF</a>
+      <a class="chip" href="assets/papers/Giorgetta_School_Bureaucrats_slides.pdf">Slides</a>
+    </div>
+  </div>
+    <div class="abstract" id="abs-bureaucracy" hidden>
+      <p>
+        I study whether public Italian schools discriminate against foreigners. Within province,
+        I contact each school inquiring about enrollment procedures and welfare with either an
+        Italian, French, or Arabic alias. I show that clerks are 5.32% less likely to answer if
+        the sender is a foreigner. Moreover, lower income per capita increases bias: 10% of
+        schools show biases &ge; 11%. When bureaucrats do respond, they are 17.6% less likely to
+        send informative answers and 4.77% less likely to be polite. These results contradict the
+        widely recognized theories of statistical discrimination and contact theory, at least in
+        this setting. Economic theories of taste-based discrimination, jointly with psychological
+        theories that postulate bias against outer groups depends on the feelings that group
+        causes, are able to explain the observed discrimination.
+      </p>
+    </div>
+  <span class="proj-year">2025</span>
+</article>
+
+<article class="project">
+  <div class="proj-figure">
+    <img src="assets/figures/energy.png"
+         alt="Line chart of forecast number of redispatches by hour of the day, comparing the baseline forecast with a forecast under a 75% price cap.">
+  </div>
+  <div class="proj-body">
+    <h4>Germany Unplugged: Forecasting Grid Congestion to Reduce Welfare Losses</h4>
+    <p class="proj-authors">with Federico&nbsp;Neri, <a href="https://giacomopocher.github.io">Giacomo&nbsp;Opocher</a> and Sara&nbsp;Tozzi</p>
+    <p class="proj-venue">Econometric Game 2025, University of Amsterdam</p>
+    <p class="proj-note">Our team result from the 2025 Econometric Game, representing the University of Bologna.</p>
+    <div class="chips">
+      <button class="chip" type="button" aria-expanded="false" aria-controls="abs-energy">Abstract</button>
+      <a class="chip" href="assets/papers/Germany_Unplugged_Econometric_Game_2025.pdf">PDF</a>
+    </div>
+  </div>
+    <div class="abstract" id="abs-energy" hidden>
+      <p>
+        Due to the complex dynamics of the electricity market, grid congestion is hard to prevent
+        and therefore produces large economic costs and welfare losses. In this paper, we propose
+        two methodologies to forecast network congestion and rationalize the role of the
+        transmission system operator through the lenses of a toy model. After investigating the
+        principal components that drive redispatches, we run a time series analysis using an
+        INAR(1) model which accounts for the count nature of the data and provides an
+        interpretable structure for forecasting. As an alternative specification, we consider a
+        fully flexible Recurrent Neural Network (RNN) model that allows to account for the
+        unbalancedness of the congestion frequency attaining high forecasting accuracy (0.94).
+        RNN outperforms INAR(1), as it better captures the true negative congestion events in the
+        test data and therefore potentially reduces the costs related to readjusting energy
+        production. Finally, we run a counterfactual analysis in which we artificially introduce a
+        75% cap on the price of electricity and study the effects on congestion. We find that
+        introducing this policy would significantly increase the frequency of redispatches.
+      </p>
+    </div>
+  <span class="proj-year">2025</span>
+</article>
+
+<article class="project">
+  <div class="proj-figure">
+    <img src="assets/figures/uncertainty.png"
+         alt="Impulse response of production to a financial uncertainty shock over 19 months, under two orderings, with confidence bands.">
+  </div>
+  <div class="proj-body">
+    <h4>What do we know about the future? Uncertainties and Time Series Econometrics: A proxy-SVAR Approach</h4>
+    <p class="proj-authors">with Giulio&nbsp;Botte</p>
+    <p class="proj-note">A little experiment from my (admittedly very short) macro period!</p>
+    <div class="chips">
+      <button class="chip" type="button" aria-expanded="false" aria-controls="abs-uncertainty">Abstract</button>
+      <a class="chip" href="assets/papers/Botte_Giorgetta_Uncertainty.pdf">PDF</a>
+    </div>
+  </div>
+    <div class="abstract" id="abs-uncertainty" hidden>
+      <p>
+        We analyze macroeconomic and financial uncertainty as underlying determinants of business
+        cycle fluctuations. To do so, we exploit a proxy-SVAR approach that has been used to study
+        the dynamic effects of tax changes but that, to our knowledge, is new to the literature on
+        uncertainty. Instrumenting both macroeconomic and financial uncertainty with an auxiliary
+        VAR specification, we find that positive shocks in either ones have large, significant and
+        sizeable negative effects on GDP growth. This holds true regardless of the particular
+        relation one assumes between the two uncertainties. Moreover, we show regime dependence in
+        pre/post-Covid effects. Our results partially align with previous results in the
+        literature on uncertainty identification.
+      </p>
+    </div>
+  <span class="proj-year">2025</span>
+</article>
+
+</main>
+
+<footer>
+  <p><a href="index.html">← Back to home</a></p>
+  <p>© <span id="year">2026</span> Alessio Giorgetta</p>
+</footer>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // Theme switch: flip it and remember the choice.
+  document.querySelector('.theme-toggle').addEventListener('click', function () {
+    var root = document.documentElement;
+    var next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+    root.dataset.theme = next;
+    localStorage.setItem('theme', next);
+  });
+
+  // Keep following the system for anyone who has never picked a theme here.
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function (e) {
+    if (!localStorage.getItem('theme')) {
+      document.documentElement.dataset.theme = e.matches ? 'dark' : 'light';
+    }
+  });
+
+
+  // Abstract chips: each one shows/hides the panel named in its aria-controls.
+  document.querySelectorAll('.chip[aria-controls]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var panel = document.getElementById(btn.getAttribute('aria-controls'));
+      var isOpen = btn.getAttribute('aria-expanded') === 'true';
+      btn.setAttribute('aria-expanded', String(!isOpen));
+      panel.hidden = isOpen;
+    });
+  });
+</script>
+
+</body>
+</html>

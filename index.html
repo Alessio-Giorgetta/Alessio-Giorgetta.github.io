@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Alessio Giorgetta</title>
+<meta name="description" content="Alessio Giorgetta, PhD student in Economics at Stanford University. Labor, public and organizational economics.">
+<script>
+  // Resolve the theme before the first paint so the page never flashes the wrong one.
+  (function () {
+    var saved = localStorage.getItem('theme');
+    var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.dataset.theme = saved || (prefersDark ? 'dark' : 'light');
+  })();
+</script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<a class="skip" href="#about">Skip to content</a>
+
+<header class="masthead">
+  <img class="portrait" src="assets/photo.jpg" alt="Alessio Giorgetta">
+  <div class="identity">
+    <h1>Alessio Giorgetta</h1>
+    <p class="role">PhD Student in Economics</p>
+    <p class="affil"><a class="quiet" href="https://economics.stanford.edu">Stanford University</a></p>
+    <p class="contact-line">
+      <a href="mailto:alessiog@stanford.edu">alessiog@stanford.edu</a>
+      <span aria-hidden="true">·</span>
+      <a href="tel:+393707085826">+39&nbsp;370&nbsp;7085826</a>
+      <span aria-hidden="true">·</span>
+      <a href="https://github.com/Alessio-Giorgetta">GitHub</a>
+    </p>
+  </div>
+</header>
+
+<nav aria-label="Sections">
+  <a href="index.html" aria-current="page">About</a>
+  <a href="research.html">Research</a>
+  <a href="cv.html">CV</a>
+  <a href="personal.html">Elsewhere</a>
+  <button class="theme-toggle" type="button" aria-label="Switch colour theme" title="Switch colour theme">
+    <svg class="icon-moon" viewBox="0 0 24 24" width="17" height="17" aria-hidden="true">
+      <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>
+    </svg>
+    <svg class="icon-sun" viewBox="0 0 24 24" width="17" height="17" aria-hidden="true">
+      <circle cx="12" cy="12" r="4.2"/>
+      <path d="M12 1.8v2.4M12 19.8v2.4M4.6 4.6l1.7 1.7M17.7 17.7l1.7 1.7M1.8 12h2.4M19.8 12h2.4M4.6 19.4l1.7-1.7M17.7 6.3l1.7-1.7"/>
+    </svg>
+  </button>
+</nav>
+
+<main id="about">
+
+<div class="page-head">
+  <div>
+    <h2 class="page-title">About</h2>
+  </div>
+</div>
+
+  <p>Hi! I'm Alessio, a PhD student in Economics at Stanford.</p>
+
+  <p>
+    My research interests revolve around the state. How do public organizations complement,
+    substitute for and interact with markets? How should they be organized? I have worked on how
+    the discretionary space bureaucrats hold shapes discrimination and inequality, how monitoring
+    costs change the organization of bureaucracies, and how state-mandated minimum wages affect
+    workers' outside options. I like a hint of ML and structural analysis, and if time and effort
+    allow, I'll be the annoying person asking what's welfare maximizing!
+  </p>
+
+  <p>
+    Like most of us, I've changed houses and affiliations countless times, but my heart stays put
+    in the Italian Alps. When not researching (and doing everything that comes along with it) you
+    can find me trekking or climbing, or one day surfing, if I ever get used to being in
+    California!
+  </p>
+
+  <h3 class="subhead subhead--spaced">Contact</h3>
+  <ul class="contact-list">
+    <li><span class="label">Email</span> <a href="mailto:alessiog@stanford.edu">alessiog@stanford.edu</a></li>
+    <li><span class="label">Phone</span> <a href="tel:+393707085826">+39&nbsp;370&nbsp;7085826</a></li>
+    <li><span class="label">GitHub</span> <a href="https://github.com/Alessio-Giorgetta">Alessio-Giorgetta</a></li>
+    <li><span class="label">X</span> <a href="https://x.com/AlessioGiorget4">@AlessioGiorget4</a></li>
+    <li><span class="label">LinkedIn</span> <a href="https://www.linkedin.com/in/alessiogiorgetta03617">alessiogiorgetta</a></li>
+  </ul>
+
+</main>
+
+<footer>
+  <p>© <span id="year">2026</span> Alessio Giorgetta</p>
+</footer>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // Theme switch: flip it and remember the choice.
+  document.querySelector('.theme-toggle').addEventListener('click', function () {
+    var root = document.documentElement;
+    var next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+    root.dataset.theme = next;
+    localStorage.setItem('theme', next);
+  });
+
+  // Keep following the system for anyone who has never picked a theme here.
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function (e) {
+    if (!localStorage.getItem('theme')) {
+      document.documentElement.dataset.theme = e.matches ? 'dark' : 'light';
+    }
+  });
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Elsewhere · Alessio Giorgetta</title>
+<meta name="description" content="Alessio Giorgetta outside economics: the Italian Alps, trekking, and the friends who came along.">
+
+<meta property="og:type" content="profile">
+<meta property="og:title" content="Elsewhere · Alessio Giorgetta">
+<meta property="og:description" content="Life outside economics.">
+<meta property="og:url" content="https://www.alessiogiorgetta.com/personal.html">
+<meta property="og:image" content="https://www.alessiogiorgetta.com/assets/photo.jpg">
+<meta name="twitter:card" content="summary">
+
+<script>
+  // Resolve the theme before the first paint so the page never flashes the wrong one.
+  (function () {
+    var saved = localStorage.getItem('theme');
+    var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.dataset.theme = saved || (prefersDark ? 'dark' : 'light');
+  })();
+</script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<a class="skip" href="#personal-body">Skip to content</a>
+
+<header class="masthead">
+  <img class="portrait" src="assets/photo.jpg" alt="Alessio Giorgetta">
+  <div class="identity">
+    <h1><a class="plain" href="index.html">Alessio Giorgetta</a></h1>
+    <p class="role">PhD Student in Economics</p>
+    <p class="affil"><a class="quiet" href="https://economics.stanford.edu">Stanford University</a></p>
+    <p class="contact-line">
+      <a href="mailto:alessiog@stanford.edu">alessiog@stanford.edu</a>
+      <span aria-hidden="true">·</span>
+      <a href="tel:+393707085826">+39&nbsp;370&nbsp;7085826</a>
+      <span aria-hidden="true">·</span>
+      <a href="https://github.com/Alessio-Giorgetta">GitHub</a>
+    </p>
+  </div>
+</header>
+
+<nav aria-label="Sections">
+  <a href="index.html">About</a>
+  <a href="research.html">Research</a>
+  <a href="cv.html">CV</a>
+  <a href="personal.html" aria-current="page">Elsewhere</a>
+  <button class="theme-toggle" type="button" aria-label="Switch colour theme" title="Switch colour theme">
+    <svg class="icon-moon" viewBox="0 0 24 24" width="17" height="17" aria-hidden="true">
+      <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>
+    </svg>
+    <svg class="icon-sun" viewBox="0 0 24 24" width="17" height="17" aria-hidden="true">
+      <circle cx="12" cy="12" r="4.2"/>
+      <path d="M12 1.8v2.4M12 19.8v2.4M4.6 4.6l1.7 1.7M17.7 17.7l1.7 1.7M1.8 12h2.4M19.8 12h2.4M4.6 19.4l1.7-1.7M17.7 6.3l1.7-1.7"/>
+    </svg>
+  </button>
+</nav>
+
+<main id="personal-body">
+
+<div class="page-head">
+  <div>
+    <h2 class="page-title">Elsewhere</h2>
+  </div>
+</div>
+
+<div class="gallery">
+
+  <figure class="shot shot--1">
+    <img src="assets/personal/farm.jpg" width="1050" height="1400"
+         alt="Alessio standing in front of a wooden Alpine farmhouse with flower boxes, forested slopes behind.">
+    <figcaption>The time I went looking for my grandparents' long-forgotten farm.</figcaption>
+  </figure>
+
+  <figure class="shot shot--2">
+    <img src="assets/personal/graduation.jpg" width="1050" height="1400" loading="lazy"
+         alt="Alessio wearing a laurel wreath on graduation day, mid-conversation with a friend outside the university.">
+    <figcaption>Our graduation day in Bologna, still arguing about the pre-trends!</figcaption>
+  </figure>
+
+  <figure class="shot shot--3">
+    <img src="assets/personal/friends.jpg" width="1400" height="1050" loading="lazy"
+         alt="Six friends laughing around a table in a bar, under a large sign reading Sete di Pace.">
+    <figcaption>Four economists, an econometrician and a finance guy walk into a bar...</figcaption>
+  </figure>
+
+  <figure class="shot shot--4">
+    <img src="assets/personal/philologist.jpg" width="986" height="1400" loading="lazy"
+         alt="Alessio and a friend sitting with plates of food in a garden, under a palm tree.">
+    <figcaption>When your philologist friend doesn't stop ranting about 13th-century handwriting!</figcaption>
+  </figure>
+
+  <figure class="shot shot--5">
+    <img src="assets/personal/hiking.jpg" width="1050" height="1400" loading="lazy"
+         alt="Alessio and a friend in hiking gear, taking a photo on the street of an Alpine village.">
+    <figcaption>With my friend who researches communities, urbanism and power!</figcaption>
+  </figure>
+
+</div>
+
+</main>
+
+<footer>
+  <p><a href="index.html">← Back to home</a></p>
+  <p>© <span id="year">2026</span> Alessio Giorgetta</p>
+</footer>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // Theme switch: flip it and remember the choice.
+  document.querySelector('.theme-toggle').addEventListener('click', function () {
+    var root = document.documentElement;
+    var next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+    root.dataset.theme = next;
+    localStorage.setItem('theme', next);
+  });
+
+  // Keep following the system for anyone who has never picked a theme here.
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function (e) {
+    if (!localStorage.getItem('theme')) {
+      document.documentElement.dataset.theme = e.matches ? 'dark' : 'light';
+    }
+  });
+</script>
+
+</body>
+</html>
