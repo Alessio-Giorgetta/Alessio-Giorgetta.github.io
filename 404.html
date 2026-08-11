@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Page not found · Alessio Giorgetta</title>
+<meta name="robots" content="noindex">
+
+<script>
+  // Resolve the theme before the first paint so the page never flashes the wrong one.
+  (function () {
+    var saved = localStorage.getItem('theme');
+    var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.dataset.theme = saved || (prefersDark ? 'dark' : 'light');
+  })();
+</script>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<header class="masthead">
+  <img class="portrait" src="/assets/photo.jpg" alt="Alessio Giorgetta">
+  <div class="identity">
+    <h1><a class="plain" href="/">Alessio Giorgetta</a></h1>
+    <p class="role">PhD Student in Economics</p>
+    <p class="affil"><a class="quiet" href="https://economics.stanford.edu">Stanford University</a></p>
+    <p class="contact-line">
+      <a href="mailto:alessiog@stanford.edu">alessiog@stanford.edu</a>
+      <span aria-hidden="true">·</span>
+      <a href="tel:+393707085826">+39&nbsp;370&nbsp;7085826</a>
+      <span aria-hidden="true">·</span>
+      <a href="https://github.com/Alessio-Giorgetta">GitHub</a>
+    </p>
+  </div>
+</header>
+
+<nav aria-label="Sections">
+  <a href="/">About</a>
+  <a href="/research.html">Research</a>
+  <a href="/cv.html">CV</a>
+  <a href="/personal.html">Elsewhere</a>
+  <button class="theme-toggle" type="button" aria-label="Switch colour theme" title="Switch colour theme">
+    <svg class="icon-moon" viewBox="0 0 24 24" width="17" height="17" aria-hidden="true">
+      <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>
+    </svg>
+    <svg class="icon-sun" viewBox="0 0 24 24" width="17" height="17" aria-hidden="true">
+      <circle cx="12" cy="12" r="4.2"/>
+      <path d="M12 1.8v2.4M12 19.8v2.4M4.6 4.6l1.7 1.7M17.7 17.7l1.7 1.7M1.8 12h2.4M19.8 12h2.4M4.6 19.4l1.7-1.7M17.7 6.3l1.7-1.7"/>
+    </svg>
+  </button>
+</nav>
+
+<main>
+
+<div class="page-head">
+  <div>
+    <h2 class="page-title">Page not found</h2>
+  </div>
+</div>
+
+<p>
+  This page does not exist. If you followed a link or a search result, it probably
+  pointed at the older version of this site, which was replaced in August 2026.
+</p>
+
+<p>
+  Everything is still here, just in a different place: the
+  <a href="/research.html">research</a>, the <a href="/cv.html">CV</a>, and
+  <a href="/">who I am</a>.
+</p>
+
+</main>
+
+<footer>
+  <p><a href="/">← Back to home</a></p>
+  <p>© <span id="year">2026</span> Alessio Giorgetta</p>
+</footer>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // Theme switch: flip it and remember the choice.
+  document.querySelector('.theme-toggle').addEventListener('click', function () {
+    var root = document.documentElement;
+    var next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+    root.dataset.theme = next;
+    localStorage.setItem('theme', next);
+  });
+
+  // Keep following the system for anyone who has never picked a theme here.
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function (e) {
+    if (!localStorage.getItem('theme')) {
+      document.documentElement.dataset.theme = e.matches ? 'dark' : 'light';
+    }
+  });
+</script>
+
+</body>
+</html>
