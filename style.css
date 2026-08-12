@@ -1,45 +1,147 @@
-/* Alessio Giorgetta — personal site
-   Plain CSS, no frameworks, no external fonts. Every rule is editable by hand. */
+/* Alessio Giorgetta · personal site
+   Plain CSS, no frameworks, no build step. Every rule is editable by hand.
+
+   Colour and type were calibrated in August 2026 against the WCAG 2.2 contrast
+   formula and the APCA lightness-contrast levels published at
+   git.apcacontrast.com. The reasoning behind each value is annotated inline. */
+
+/* ---------- self-hosted type ----------
+   Source Serif 4 and Source Sans 3: two faces from the same Adobe superfamily,
+   drawn to pair, both SIL Open Font License 1.1. Subset and served from
+   assets/fonts, so the site still makes zero external requests. Licences travel
+   with the files, as the OFL requires.
+
+   These are variable fonts with the weight axis narrowed to what the site uses,
+   so 400, 500 and 600 are all real drawn weights rather than the browser
+   smearing one outline. The serif also carries an optical-size axis, which
+   browsers apply automatically: the name in the masthead gets slightly different
+   letterforms from the year numerals beside a paper. */
+
+@font-face {
+  font-family: "Source Serif 4";
+  src: url("assets/fonts/serif-roman.woff2") format("woff2-variations"),
+       url("assets/fonts/serif-roman.woff2") format("woff2");
+  font-weight: 400 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Source Sans 3";
+  src: url("assets/fonts/sans-roman.woff2") format("woff2-variations"),
+       url("assets/fonts/sans-roman.woff2") format("woff2");
+  font-weight: 400 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Source Sans 3";
+  src: url("assets/fonts/sans-italic.woff2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
 
 :root {
   color-scheme: light;
 
-  --ink:        #1a1a1a;   /* body text */
-  --ink-soft:   #5c5c5c;   /* secondary text */
-  --ink-faint:  #8a8a8a;   /* footer, meta */
-  --rule:       #e2e2e0;   /* hairlines */
-  --bg:         #fdfdfb;   /* page */
-  --accent:     #7a1f1f;   /* links, a restrained academic red */
+  /* ---- palette ----------------------------------------------------------
+     Every value below is placed against the APCA lightness-contrast levels
+     published at git.apcacontrast.com:
+       Lc 90  preferred for body text        Lc 75  minimum for body text
+       Lc 60  minimum for content text       Lc 45  headlines
+       Lc 30  placeholder / disabled         Lc 15  floor for non-text
+     The old --ink-faint was Lc 60.8 and 3.39:1, below WCAG AA, while being
+     used for section headings, dates, venues and the footer. That is the one
+     change here that is a bug fix rather than a preference. */
+
+  --ink:        #1a1a18;   /* Lc 103 · body text            */
+  --ink-soft:   #55534d;   /* Lc  84 · secondary prose      */
+  --ink-faint:  #6e6a63;   /* Lc  75 · metadata (was 60.8, and failed AA) */
+  --rule:       #d3d2cf;   /* Lc  22 · hairlines (was 13.5: below the visibility floor) */
+  --rule-soft:  #e6e5e1;   /*          the quietest divider */
+  --bg:         #fdfcf8;   /* warm paper, never pure white  */
+  --bg-inset:   #f6f4ee;   /* recessed panels               */
+  --accent:     #8c1515;   /* Lc 88 · Stanford Cardinal     */
+  --accent-ink: #fdfcf8;   /* text on an accent fill        */
+
   --todo-bg:    #fff8e1;
   --todo-edge:  #e0b83a;
 
-  --icon-moon:  block;     /* offer dark mode */
+  --icon-moon:  block;
   --icon-sun:   none;
 
-  --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
-  --sans:  -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  /* ---- type -------------------------------------------------------------
+     The self-hosted faces lead, so every visitor sees the same site. The tail
+     of each stack is the old system chain, which is what shows for the moment
+     before the font arrives and if it ever fails to load. "Iowan Old Style"
+     ships only on macOS/iOS, which is why the site used to look meaningfully
+     different on Windows and Android. */
 
-  --measure: 40rem;   /* reading width */
+  --serif: "Source Serif 4", "Iowan Old Style", "Palatino Linotype",
+           "Book Antiqua", Palatino, Charter, Georgia, "Times New Roman", serif;
+  --sans:  "Source Sans 3", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+           "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+  /* A real scale rather than sixteen ad-hoc decimals. Perfect fourth (1.333)
+     at the display end, tightened to a major third (1.25) near body size so
+     the small steps stay distinguishable. */
+  --step--2: 0.8125rem;  /* 13px   · chips, eyebrow labels: the floor, nothing goes below */
+  --step--1: 0.9rem;     /* 14.4px · dates, footer, captions */
+  --step-0:  1.1rem;     /* 17.6px · body */
+  --step-1:  1.22rem;    /* 19.5px · entry and project titles */
+  --step-2:  1.8rem;     /* 28.8px · page titles */
+  --step-3:  2.2rem;     /* 35.2px · the name */
+
+  /* The old 40rem measured 75 characters per line at the old font: the very top
+     of Bringhurst's 45–75 range. Source Sans 3 is narrower per character than
+     the system faces it replaces, and has a slightly smaller x-height, so the
+     body size goes up a little and the column comes in. Together they land at
+     ~66 characters, the figure the reading literature converges on. */
+  --measure: 34rem;
+
+  --radius:    3px;
+  --radius-sm: 2px;
 }
 
 /* The dark palette lives in exactly one place. The small script in each page's
    <head> resolves the saved choice, or the system preference, into
-   data-theme on <html> before the first paint, so there is no flash. */
+   data-theme on <html> before the first paint, so there is no flash.
+
+   Dark mode is where the old palette was weakest: --ink-soft sat at Lc 52.8
+   (APCA "headline only") while carrying abstracts and CV bullets, and
+   --ink-faint at Lc 31.2, the level APCA reserves for *disabled* text, while
+   carrying section headings and dates. Both are raised substantially here.
+   The background moves off #161614 to #201f1c: the halation literature puts
+   the comfortable dark-surface range around RGB 30–40, and lifting it also
+   reduces the glow that pure-dark backgrounds produce for readers with
+   astigmatism. */
 :root[data-theme="dark"] {
   color-scheme: dark;
 
-  --ink:       #e8e6e3;
-  --ink-soft:  #a8a5a0;
-  --ink-faint: #7d7a75;
-  --rule:      #33322f;
-  --bg:        #161614;
-  --accent:    #d98b7a;
+  --ink:        #e9e7e3;   /* Lc 90 */
+  --ink-soft:   #d0cecb;   /* Lc 75 · was Lc 52.8 */
+  --ink-faint:  #b6b4b0;   /* Lc 60 · was Lc 31.2 */
+  --rule:       #625e58;   /* Lc 18 · was Lc 0.0, literally below the visibility floor */
+  --rule-soft:  #403d39;
+  --bg:         #201f1c;
+  --bg-inset:   #282621;
+  --accent:     #f0a48d;   /* Lc 61 · see note below */
+  --accent-ink: #201f1c;
+
   --todo-bg:   #2b2410;
   --todo-edge: #7a6420;
 
-  --icon-moon: none;       /* offer light mode */
+  --icon-moon: none;
   --icon-sun:  block;
 }
+
+/* Note on the dark accent: red is an intrinsically dark hue, so pushing it to
+   APCA's Lc 75 body-text level forces it to #f3c5b6, a pale pink that has
+   lost 60% of its saturation and no longer reads as the same brand colour.
+   #f0a48d clears Lc 60 ("content text"), keeps 41% saturation, and every link
+   that uses it is also underlined, so colour is never the only signal. */
 
 * { box-sizing: border-box; }
 
@@ -48,14 +150,17 @@ html { -webkit-text-size-adjust: 100%; }
 body {
   margin: 0 auto;
   padding: 4rem 1.5rem 3rem;
-  max-width: calc(var(--measure) + 3rem);
+  max-width: calc(var(--measure) + 9rem);
   background: var(--bg);
   color: var(--ink);
   font-family: var(--sans);
-  font-size: 1.0625rem;
+  font-size: var(--step-0);
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
+
+::selection { background: var(--accent); color: var(--accent-ink); }
 
 /* ---------- masthead ---------- */
 
@@ -72,17 +177,18 @@ body {
   height: 116px;
   border-radius: 50%;
   object-fit: cover;
-  /* the source photo is landscape; pull the crop onto the face */
   object-position: 46% 42%;
   filter: saturate(0.92);
+  /* a hairline stops the circle dissolving into the page on both themes */
+  box-shadow: 0 0 0 1px var(--rule);
 }
 
 .identity h1 {
   font-family: var(--serif);
-  font-size: 2.1rem;
+  font-size: var(--step-3);
   font-weight: 500;
-  line-height: 1.15;
-  letter-spacing: -0.01em;
+  line-height: 1.12;
+  letter-spacing: -0.012em;
   margin: 0 0 0.4rem;
 }
 
@@ -96,21 +202,26 @@ body {
 nav {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 1.5rem;
-  padding: 0.9rem 0;
+  padding: 0.85rem 0;
   border-top: 1px solid var(--rule);
   border-bottom: 1px solid var(--rule);
   margin-bottom: 3rem;
-  font-size: 0.75rem;
+  /* was 0.75rem/12px with 0.11em tracking. 12px uppercase is below the size
+     APCA will certify at any colour short of full-strength ink; 13.5px at
+     weight 500 clears it and reads less like fine print. */
+  font-size: 0.845rem;
+  font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 0.11em;
+  letter-spacing: 0.1em;
 }
 
 nav a {
   color: var(--ink-soft);
   text-decoration: none;
   border-bottom: 1px solid transparent;
-  padding-bottom: 2px;
+  padding-bottom: 3px;
   transition: color 0.15s, border-color 0.15s;
 }
 
@@ -120,17 +231,25 @@ nav a:focus-visible {
   border-bottom-color: var(--accent);
 }
 
-/* theme switch, pushed to the far end of the nav row */
+nav a[aria-current="page"] {
+  color: var(--ink);
+  border-bottom-color: var(--accent);
+  border-bottom-width: 2px;
+}
+
 .theme-toggle {
   margin-left: auto;
   display: flex;
   align-items: center;
-  padding: 0.1rem;
+  padding: 0.25rem;
+  margin-right: -0.25rem;
   background: none;
   border: 0;
+  border-radius: var(--radius);
   color: var(--ink-soft);
   cursor: pointer;
   line-height: 0;
+  transition: color 0.15s;
 }
 
 .theme-toggle:hover { color: var(--accent); }
@@ -150,13 +269,15 @@ nav a:focus-visible {
 
 section { margin-bottom: 3.5rem; scroll-margin-top: 2rem; }
 
+/* Section headings were --ink-faint: the faintest token on the page carrying
+   the page's structural landmarks. Promoted to --ink-soft and up one size. */
 h2 {
-  font-family: var(--serif);
-  font-size: 0.8rem;
+  font-family: var(--sans);
+  font-size: var(--step--2);
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.15em;
-  color: var(--ink-faint);
+  letter-spacing: 0.13em;
+  color: var(--ink-soft);
   margin: 0 0 1.25rem;
   padding-bottom: 0.5rem;
   border-bottom: 1px solid var(--rule);
@@ -168,23 +289,23 @@ a {
   color: var(--accent);
   text-decoration-thickness: 1px;
   text-underline-offset: 2px;
+  text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  transition: text-decoration-color 0.15s;
 }
+a:hover { text-decoration-color: currentColor; }
 
 /* ---------- research projects ---------- */
 
 .subhead {
   font-family: var(--sans);
-  font-size: 0.95rem;
+  font-size: var(--step-0);
   font-weight: 600;
   color: var(--ink);
   margin: 0 0 1rem;
 }
 
-/* when a subhead follows body copy rather than a page title */
 .subhead--spaced { margin-top: 2.75rem; }
 
-/* figure | text | year on the first row; the abstract spans all three columns
-   underneath, so it reads at full page width rather than in the text column */
 .project {
   display: grid;
   grid-template-columns: 148px minmax(0, 1fr) auto;
@@ -192,7 +313,7 @@ a {
     "fig body year"
     "abs abs abs";
   gap: 0 1.5rem;
-  padding: 1.75rem 0;
+  padding: 1.9rem 0;
   border-top: 1px solid var(--rule);
   align-items: start;
 }
@@ -206,10 +327,9 @@ a {
   display: block;
   width: 100%;
   aspect-ratio: 4 / 3;
-  border-radius: 3px;
+  border-radius: var(--radius);
 }
 
-/* graphs, not book covers — never crop the axes off */
 .proj-figure img {
   object-fit: contain;
   border: 1px solid var(--rule);
@@ -234,9 +354,10 @@ a {
 
 .proj-body h4 {
   font-family: var(--serif);
-  font-size: 1.15rem;
+  font-size: var(--step-1);
   font-weight: 600;
-  line-height: 1.3;
+  line-height: 1.28;
+  letter-spacing: -0.005em;
   margin: 0 0 0.3rem;
 }
 
@@ -252,48 +373,75 @@ a {
   margin: 0 0 0.7rem;
 }
 
-/* Alessio's own aside on a project — deliberately a different voice */
 .proj-note {
-  font-size: 0.89rem;
+  font-size: 0.9rem;
   font-style: italic;
   color: var(--ink-soft);
-  border-left: 2px solid var(--rule);
+  border-left: 2px solid var(--accent);
   padding-left: 0.7rem;
   margin: 0 0 0.75rem;
 }
 
+/* The year was set in --rule, which measured Lc 13.5 in light and Lc 0.0 in
+   dark: below the level APCA calls the floor for anything being visible at
+   all. Kept as a quiet marginal number, but an actually legible one. */
 .proj-year {
   grid-area: year;
   font-family: var(--serif);
-  font-size: 2rem;
+  font-size: 1.9rem;
   line-height: 1;
-  color: var(--rule);
+  color: var(--ink-faint);
+  opacity: 0.55;
   font-variant-numeric: tabular-nums;
   -webkit-user-select: none;
   user-select: none;
 }
 
-.chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0; }
+.chips { display: flex; flex-wrap: wrap; gap: 0.45rem; margin: 0; }
 
 .chip {
   font-family: inherit;
-  font-size: 0.68rem;
+  font-size: var(--step--2);
+  font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 0.09em;
+  letter-spacing: 0.08em;
   color: var(--ink-soft);
   background: none;
   border: 1px solid var(--rule);
-  border-radius: 3px;
-  padding: 0.34rem 0.62rem;
+  border-radius: var(--radius);
+  padding: 0.36rem 0.66rem;
   text-decoration: none;
   cursor: pointer;
-  transition: border-color 0.15s, color 0.15s;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
 }
 
 .chip:hover { color: var(--accent); border-color: var(--accent); }
-.chip[aria-expanded="true"] { color: var(--accent); border-color: var(--accent); }
 
-/* a chip with no destination yet — visibly inert, never mistaken for a link */
+/* The open state used to be signalled by colour alone. Under simulated
+   protanopia the accent red collapses to within 1.4:1 of the body ink, so the
+   distinction all but vanished. It now also fills and carries a caret. */
+.chip[aria-expanded]::after {
+  content: "";
+  display: inline-block;
+  width: 0.42em;
+  height: 0.42em;
+  margin-left: 0.5em;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: translateY(-0.15em) rotate(45deg);
+  transition: transform 0.18s;
+}
+
+.chip[aria-expanded="true"] {
+  color: var(--accent-ink);
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.chip[aria-expanded="true"]::after {
+  transform: translateY(0.05em) rotate(225deg);
+}
+
 .chip--pending {
   color: var(--ink-faint);
   border-style: dashed;
@@ -308,11 +456,13 @@ a {
   font-size: 1rem;
   line-height: 1.68;
   color: var(--ink-soft);
-  border-left: 2px solid var(--rule);
-  padding-left: 1.1rem;
+  background: var(--bg-inset);
+  border-left: 2px solid var(--accent);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 1rem 1.2rem;
 }
 
-.abstract p { margin: 0; }
+.abstract p { margin: 0; max-width: none; }
 
 /* ---------- cv page ---------- */
 
@@ -324,16 +474,11 @@ a.quiet:hover { color: var(--accent); text-decoration-color: currentColor; }
 
 .contact-line {
   margin-top: 0.5rem;
-  font-size: 0.9rem;
+  font-size: var(--step--1);
   color: var(--ink-faint);
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-}
-
-nav a[aria-current="page"] {
-  color: var(--ink);
-  border-bottom-color: var(--ink);
 }
 
 .page-head {
@@ -347,11 +492,14 @@ nav a[aria-current="page"] {
   border-bottom: 1px solid var(--rule);
 }
 
+/* This was inheriting the body's 1.65 line-height at 28px, so every page title
+   sat in a 46px box. Display type wants roughly 1.1–1.25. */
 .page-title {
   font-family: var(--serif);
-  font-size: 1.75rem;
+  font-size: var(--step-2);
   font-weight: 500;
-  letter-spacing: -0.01em;
+  line-height: 1.15;
+  letter-spacing: -0.012em;
   text-transform: none;
   color: var(--ink);
   border: 0;
@@ -359,19 +507,20 @@ nav a[aria-current="page"] {
   padding: 0;
 }
 
-.updated { color: var(--ink-faint); font-size: 0.85rem; margin: 0; }
+.updated { color: var(--ink-faint); font-size: var(--step--1); margin: 0; }
 
 .button {
   display: inline-block;
   border: 1px solid var(--rule);
-  border-radius: 3px;
-  padding: 0.45rem 1rem;
-  font-size: 0.8rem;
+  border-radius: var(--radius);
+  padding: 0.5rem 1rem;
+  font-size: var(--step--2);
+  font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 0.09em;
+  letter-spacing: 0.08em;
   color: var(--ink-soft);
   text-decoration: none;
-  transition: border-color 0.15s, color 0.15s;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
 }
 
 .button:hover {
@@ -379,19 +528,24 @@ nav a[aria-current="page"] {
   border-color: var(--accent);
 }
 
-/* the PDF is the artifact committees actually download — make it the loudest thing */
+/* The PDF is the artifact committees actually download. It was outlined in the
+   accent; filling it makes it the one unambiguous call to action on the page,
+   and the fill survives every colour-vision simulation because it is carrying
+   a shape and a weight difference, not only a hue. */
 .button--primary {
+  background: var(--accent);
   border-color: var(--accent);
-  color: var(--accent);
+  color: var(--accent-ink);
   flex: 0 0 auto;
 }
 
 .button--primary:hover {
-  background: var(--accent);
-  color: var(--bg);
+  background: color-mix(in srgb, var(--accent) 84%, var(--ink));
+  border-color: color-mix(in srgb, var(--accent) 84%, var(--ink));
+  color: var(--accent-ink);
 }
 
-.entry { margin-bottom: 1.75rem; }
+.entry { margin-bottom: 1.85rem; }
 
 .entry-head {
   display: flex;
@@ -402,15 +556,15 @@ nav a[aria-current="page"] {
 
 .entry h3 {
   font-family: var(--serif);
-  font-size: 1.1rem;
+  font-size: var(--step-1);
   font-weight: 600;
-  line-height: 1.35;
+  line-height: 1.3;
   margin: 0 0 0.15rem;
 }
 
 .entry .date {
   flex: 0 0 auto;
-  font-size: 0.82rem;
+  font-size: var(--step--1);
   color: var(--ink-faint);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
@@ -422,8 +576,6 @@ nav a[aria-current="page"] {
   margin: 0 0 0.4rem;
 }
 
-/* "· with Name and Name" moves to the next line as a block rather than
-   stranding the separator or splitting a person's name */
 .entry .place .with { display: inline-block; }
 
 .entry ul {
@@ -434,14 +586,16 @@ nav a[aria-current="page"] {
 }
 
 .entry li { margin-bottom: 0.2rem; }
+.entry li::marker { color: var(--ink-faint); }
 
 .skills { margin: 0; }
 .skills dt {
-  font-size: 0.75rem;
+  font-size: var(--step--2);
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: var(--ink-faint);
-  margin-bottom: 0.2rem;
+  margin-bottom: 0.25rem;
 }
 .skills dd {
   margin: 0 0 1rem;
@@ -449,9 +603,6 @@ nav a[aria-current="page"] {
   font-size: 0.97rem;
 }
 
-/* Dot-separated runs that must wrap between items, never through one.
-   Items are bound internally with &nbsp; in the HTML; the flex container
-   does the wrapping and carries the separators. */
 .inline-list {
   display: flex;
   flex-wrap: wrap;
@@ -484,24 +635,24 @@ nav a[aria-current="page"] {
   display: block;
   width: 100%;
   height: auto;
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
 }
 
 .shot figcaption {
-  margin-top: 0.7rem;
-  font-size: 0.88rem;
+  margin-top: 0.75rem;
+  /* was 0.88rem/14.1px; raised to the --step--1 step so captions sit at a size
+     APCA will certify against --ink-soft */
+  font-size: var(--step--1);
   line-height: 1.5;
   color: var(--ink-soft);
+  max-width: 32ch;
 }
 
-/* Five frames, arranged as pair / band / pair. The one landscape shot runs wide
-   across the middle and breaks the two portrait pairs, and the drops alternate
-   so neither column carries all the weight. */
-.shot--1 { grid-column: 1 / 6; }                       /* 5 cols, left */
-.shot--2 { grid-column: 8 / 13; margin-top: 5rem; }    /* 5 cols, right, dropped */
-.shot--3 { grid-column: 1 / 12; margin-top: 1rem; }    /* 11 cols, the wide band */
-.shot--4 { grid-column: 1 / 6; margin-top: 4rem; }     /* 5 cols, left, dropped  */
-.shot--5 { grid-column: 8 / 13; }                      /* 5 cols, right */
+.shot--1 { grid-column: 1 / 6; }
+.shot--2 { grid-column: 8 / 13; margin-top: 5rem; }
+.shot--3 { grid-column: 1 / 12; margin-top: 1rem; }
+.shot--4 { grid-column: 1 / 6; margin-top: 4rem; }
+.shot--5 { grid-column: 8 / 13; }
 
 /* ---------- contact ---------- */
 
@@ -510,17 +661,18 @@ nav a[aria-current="page"] {
 .contact-list li {
   display: flex;
   gap: 1rem;
-  padding: 0.4rem 0;
-  border-bottom: 1px solid var(--rule);
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--rule-soft);
 }
 
 .contact-list .label {
   flex: 0 0 5.5rem;
-  font-size: 0.75rem;
+  font-size: var(--step--2);
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.09em;
   color: var(--ink-faint);
-  padding-top: 0.2rem;
+  padding-top: 0.15rem;
 }
 
 /* ---------- placeholders that must never ship ---------- */
@@ -531,7 +683,7 @@ nav a[aria-current="page"] {
   padding: 0.85rem 1rem;
   font-size: 0.92rem;
   color: var(--ink-soft);
-  border-radius: 0 3px 3px 0;
+  border-radius: 0 var(--radius) var(--radius) 0;
 }
 
 .todo-inline {
@@ -546,9 +698,10 @@ nav a[aria-current="page"] {
 
 footer {
   border-top: 1px solid var(--rule);
+  margin-top: 4rem;
   padding-top: 1.25rem;
   color: var(--ink-faint);
-  font-size: 0.85rem;
+  font-size: var(--step--1);
 }
 
 footer p { margin: 0; }
@@ -566,9 +719,27 @@ footer p { margin: 0; }
   background: var(--bg);
   padding: 0.5rem 0.75rem;
   border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  z-index: 10;
 }
 
-:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+/* Two-tone ring so the focus indicator holds against both the page and any
+   filled element it lands on. */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px var(--bg);
+}
+
+/* The stylesheet had no reduced-motion block at all. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
 
 /* ---------- small screens ---------- */
 
@@ -582,7 +753,7 @@ footer p { margin: 0; }
   }
 
   .portrait { width: 96px; height: 96px; }
-  .identity h1 { font-size: 1.75rem; }
+  .identity h1 { font-size: 1.8rem; }
   nav { gap: 1.1rem; }
   .contact-list li { flex-direction: column; gap: 0.15rem; }
   .contact-list .label { flex: none; }
@@ -595,7 +766,7 @@ footer p { margin: 0; }
     grid-template-areas: "year" "fig" "body" "abs";
     gap: 0.75rem 0;
   }
-  .proj-year { font-size: 0.95rem; color: var(--ink-faint); }
+  .proj-year { font-size: var(--step--1); opacity: 1; }
   .proj-figure { max-width: 220px; }
 
   .gallery { grid-template-columns: 1fr; row-gap: 2.5rem; }
@@ -603,6 +774,7 @@ footer p { margin: 0; }
     grid-column: 1 / -1;
     margin-top: 0;
   }
+  .shot figcaption { max-width: none; }
 }
 
 /* ---------- print ---------- */
@@ -615,4 +787,5 @@ footer p { margin: 0; }
   section { margin-bottom: 1.25rem; page-break-inside: avoid; }
   .entry { page-break-inside: avoid; }
   .page-head { border-bottom: 1px solid #999; }
+  .abstract { background: none; border-left: 2px solid #999; }
 }
