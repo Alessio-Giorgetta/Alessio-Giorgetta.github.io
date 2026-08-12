@@ -1,14 +1,14 @@
 /* Alessio Giorgetta · personal site
    Plain CSS, no frameworks, no build step. Every rule is editable by hand.
 
-   Colour and type were calibrated in August 2026 against the WCAG 2.2 contrast
+   Color and type were calibrated in August 2026 against the WCAG 2.2 contrast
    formula and the APCA lightness-contrast levels published at
    git.apcacontrast.com. The reasoning behind each value is annotated inline. */
 
 /* ---------- self-hosted type ----------
    Source Serif 4 and Source Sans 3: two faces from the same Adobe superfamily,
    drawn to pair, both SIL Open Font License 1.1. Subset and served from
-   assets/fonts, so the site still makes zero external requests. Licences travel
+   assets/fonts, so the site still makes zero external requests. Licenses travel
    with the files, as the OFL requires.
 
    These are variable fonts with the weight axis narrowed to what the site uses,
@@ -139,9 +139,9 @@
 
 /* Note on the dark accent: red is an intrinsically dark hue, so pushing it to
    APCA's Lc 75 body-text level forces it to #f3c5b6, a pale pink that has
-   lost 60% of its saturation and no longer reads as the same brand colour.
+   lost 60% of its saturation and no longer reads as the same brand color.
    #f0a48d clears Lc 60 ("content text"), keeps 41% saturation, and every link
-   that uses it is also underlined, so colour is never the only signal. */
+   that uses it is also underlined, so color is never the only signal. */
 
 * { box-sizing: border-box; }
 
@@ -209,7 +209,7 @@ nav {
   border-bottom: 1px solid var(--rule);
   margin-bottom: 3rem;
   /* was 0.75rem/12px with 0.11em tracking. 12px uppercase is below the size
-     APCA will certify at any colour short of full-strength ink; 13.5px at
+     APCA will certify at any color short of full-strength ink; 13.5px at
      weight 500 clears it and reads less like fine print. */
   font-size: 0.845rem;
   font-weight: 500;
@@ -417,7 +417,7 @@ a:hover { text-decoration-color: currentColor; }
 
 .chip:hover { color: var(--accent); border-color: var(--accent); }
 
-/* The open state used to be signalled by colour alone. Under simulated
+/* The open state used to be signaled by color alone. Under simulated
    protanopia the accent red collapses to within 1.4:1 of the body ink, so the
    distinction all but vanished. It now also fills and carries a caret. */
 .chip[aria-expanded]::after {
@@ -530,7 +530,7 @@ a.quiet:hover { color: var(--accent); text-decoration-color: currentColor; }
 
 /* The PDF is the artifact committees actually download. It was outlined in the
    accent; filling it makes it the one unambiguous call to action on the page,
-   and the fill survives every colour-vision simulation because it is carrying
+   and the fill survives every color-vision simulation because it is carrying
    a shape and a weight difference, not only a hue. */
 .button--primary {
   background: var(--accent);

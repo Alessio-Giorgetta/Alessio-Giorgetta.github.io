@@ -19,4 +19,4 @@ Upstream:
 - https://github.com/adobe-fonts/source-serif (4.005R)
 - https://github.com/adobe-fonts/source-sans (3.052R)
 
-The OFL requires the licence to travel with the fonts; both are in this folder.
+The OFL requires the license to travel with the fonts; both are in this folder.

@@ -1,6 +1,6 @@
 /* GENERATED map geometry - do not edit by hand.
    Source: openpolis/geojson-italy limits_IT_regions.geojson (derived from
-   ISTAT administrative boundaries, licence CC-BY; attribution required if
+   ISTAT administrative boundaries, license CC-BY; attribution required if
    published). Downloaded 2026-08-12, equirectangular projection about the
    sample's mid-latitude, Douglas-Peucker tolerance 1.2px at 560px height,
    outer rings only, islands under 4px^2 dropped. Regenerating requires the

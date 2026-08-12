@@ -6,7 +6,7 @@ administrative boundaries:
 
   - Original data: ISTAT (Istituto Nazionale di Statistica),
     "Confini delle unita amministrative a fini statistici".
-    Copyright ISTAT, released under the CC-BY licence.
+    Copyright ISTAT, released under the CC-BY license.
   - Intermediate processing: the openpolis/geojson-italy project
     (https://github.com/openpolis/geojson-italy), which converts the
     ISTAT data to GeoJSON and releases it under CC-BY 4.0.
@@ -17,7 +17,7 @@ administrative boundaries:
     outer rings only, islets under 4px^2 dropped, keyed by
     ISO 3166-2:IT code.
 
-Licence: Creative Commons Attribution 4.0 International (CC-BY 4.0)
+License: Creative Commons Attribution 4.0 International (CC-BY 4.0)
 https://creativecommons.org/licenses/by/4.0/
 
 Attribution, as displayed on the page using this file:

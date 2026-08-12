@@ -1,7 +1,7 @@
 /* GENERATED from school_bureaucrats_estimates.json - do not edit by hand.
-   Regenerate after any JSON change:
-   python3 -c "import json;d=json.load(open('data/school_bureaucrats_estimates.json'));open('data/school_bureaucrats_estimates.js','w').write('window.SCHOOL_BUREAUCRATS_DATA = '+json.dumps(d,ensure_ascii=False,indent=1)+';')"
-   Exists so the prototypes work from file:// where fetch() is blocked. */
+   It exists so the page works from file://, where fetch() is blocked.
+   Regenerate with scripts/build_data_mirror.py after any change to the JSON,
+   then copy this file to site/assets/data/. */
 window.SCHOOL_BUREAUCRATS_DATA = {
  "_meta": {
   "paper": "Do School Bureaucrats Discriminate against Foreigners? Experimental Evidence from Italy",
@@ -32,9 +32,9 @@ window.SCHOOL_BUREAUCRATS_DATA = {
    ]
   },
   "schools_universe": 50511,
-  "schools_analysed": 7120,
-  "schools_analysed_per_prose": 7192,
-  "schools_analysed_note": "The thesis prose (p.7) says 7,192; every table reports 7,120. Unresolved, see TRANSCRIPTION_NOTES.md.",
+  "schools_analyzed": 7120,
+  "schools_analyzed_per_prose": 7192,
+  "schools_analyzed_note": "The thesis prose (p.7) says 7,192; every table reports 7,120. Unresolved, see TRANSCRIPTION_NOTES.md.",
   "regions_in_sample": 18,
   "regions_excluded": [
    "Trentino-Alto Adige",
@@ -42,7 +42,7 @@ window.SCHOOL_BUREAUCRATS_DATA = {
   ],
   "regions_excluded_reason": "Not present in the Ministry of Education source data; both have large German- and French-speaking minorities, which the thesis argues would have confounded the alias manipulation.",
   "provinces": 103,
-  "randomisation": "Within province (stratum). 50% Italian control, 25% French alias (T1), 25% Arabic alias (T2). Independently randomised across nine working days of sending.",
+  "randomization": "Within province (stratum). 50% Italian control, 25% French alias (T1), 25% Arabic alias (T2). Independently randomized across nine working days of sending.",
   "arms": [
    {
     "id": "control",
@@ -1384,7 +1384,7 @@ window.SCHOOL_BUREAUCRATS_DATA = {
    "table": "A1"
   },
   "model": "BERT, Italian version",
-  "training": "500 emails, roughly 10% of the response sample, manually labelled; model then classified the remaining 5,107.",
+  "training": "500 emails, roughly 10% of the response sample, manually labeled; model then classified the remaining 5,107.",
   "metrics_note": "Reported for epoch 4, the last epoch of training.",
   "usefulness": {
    "accuracy": 0.68,
@@ -1408,7 +1408,7 @@ window.SCHOOL_BUREAUCRATS_DATA = {
    "name": "Linear AIPW",
    "reference": "Chernozhukov et al. (2018)",
    "nuisance": "Random Forest with the Honesty approach (Athey and Imbens 2016)",
-   "conditioning": "Outcome and treatment modelled conditional on province and day-of-sending, the randomisation levels.",
+   "conditioning": "Outcome and treatment modeled conditional on province and day-of-sending, the randomization levels.",
    "cv_folds": 10,
    "source_note": "Estimator described in the notes to slides 43 and 44. Slide 30 carries the same table layout but no notes block."
   },

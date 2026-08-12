@@ -227,7 +227,7 @@ details.datatable summary { cursor: pointer; color: var(--ink-soft); font-weight
   <a href="research.html">Research</a>
   <a href="cv.html">CV</a>
   <a href="personal.html">Elsewhere</a>
-  <button class="theme-toggle" type="button" aria-label="Switch colour theme" title="Switch colour theme">
+  <button class="theme-toggle" type="button" aria-label="Switch color theme" title="Switch color theme">
     <svg class="icon-moon" viewBox="0 0 24 24" width="17" height="17" aria-hidden="true">
       <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>
     </svg>
@@ -261,15 +261,15 @@ details.datatable summary { cursor: pointer; color: var(--ink-soft); font-weight
   <p class="eyebrow">One · what varies</p>
   <h3>The same email, three signatures</h3>
   <p class="lede">
-    Every school received an identical enquiry about enrolment. Only the sender's name changed.
+    Every school received an identical inquiry about enrollment. Only the sender's name changed.
   </p>
 
   <div class="email" id="email">
-    <div class="from">To: the administrative office · Subject: Enrolment enquiry</div>
+    <div class="from">To: the administrative office · Subject: Enrollment inquiry</div>
     <p>Good morning, my name is <span class="slot" id="slot-a">Matteo Conti</span>.
       I will move to Bologna next year with my family. I would like to ask when the
       administrative office is open because I would like to ask some questions about
-      how to enrol my son.</p>
+      how to enroll my son.</p>
     <p>Do I need an appointment? Are you only open during weekdays? By chance, do you
       have afternoon activities? Are there income requirements to join them or to have
       reductions of the cost?</p>
@@ -329,7 +329,7 @@ details.datatable summary { cursor: pointer; color: var(--ink-soft); font-weight
 
   <p class="facts">
     <b>7,120</b> schools · <b>103</b> provinces · <b>18</b> regions ·
-    sending randomised again across <b>9</b> working days
+    sending randomized again across <b>9</b> working days
   </p>
 </section>
 
@@ -405,16 +405,16 @@ details.datatable summary { cursor: pointer; color: var(--ink-soft); font-weight
   <p class="eyebrow">Five · the replies themselves</p>
   <h3>When they do answer, what do they say?</h3>
   <p class="lede">
-    Answering is only half of the behaviour. Every reply was classified as useful or not,
+    Answering is only half of the behavior. Every reply was classified as useful or not,
     and polite or not.
   </p>
 
   <div class="steps" aria-label="Text-analysis pipeline">
-    <div class="step"><b>500 replies</b> hand-labelled as useful / polite, to teach the model</div>
+    <div class="step"><b>500 replies</b> hand-labeled as useful / polite, to teach the model</div>
     <div class="step-arrow" aria-hidden="true">→</div>
     <div class="step"><b>BERT, Italian version</b> fine-tuned on those labels</div>
     <div class="step-arrow" aria-hidden="true">→</div>
-    <div class="step"><b>5,107 replies</b> labelled by the model: the estimation sample</div>
+    <div class="step"><b>5,107 replies</b> labeled by the model: the estimation sample</div>
   </div>
 
   <div class="seg" id="nlp-toggle" role="group" aria-label="Estimator for the text outcomes">
@@ -489,7 +489,7 @@ details.datatable summary { cursor: pointer; color: var(--ink-soft); font-weight
   <p class="figure-note">
     Estimator: linear AIPW (Chernozhukov et al. 2018), nuisance parameters from a random
     forest with the honesty approach (Athey and Imbens 2016), outcome and treatment
-    modelled conditional on province and day-of-sending, ten cross-fitting folds.
+    modeled conditional on province and day-of-sending, ten cross-fitting folds.
     Usefulness and politeness are conditional on the school replying at all.
     Trentino-Alto Adige and Valle d'Aosta are not in the experiment: absent from the
     Ministry source data, and their large German- and French-speaking minorities would
@@ -535,21 +535,21 @@ var ARMS = [
 
 (function () {
   var NAMES = {
-    ctrl: { name: 'Matteo Conti',    colour: 'var(--arm-ctrl)' },
-    fr:   { name: 'Antoine Lambert', colour: 'var(--arm-fr)' },
-    ar:   { name: 'Omar El Haddad',  colour: 'var(--arm-ar)' }
+    ctrl: { name: 'Matteo Conti',    color: 'var(--arm-ctrl)' },
+    fr:   { name: 'Antoine Lambert', color: 'var(--arm-fr)' },
+    ar:   { name: 'Omar El Haddad',  color: 'var(--arm-ar)' }
   };
   var slotA = el('#slot-a'), slotB = el('#slot-b');
   var aliases = els('.alias');
   aliases.forEach(function (btn) {
-    btn.style.setProperty('--arm', NAMES[btn.dataset.arm].colour);
+    btn.style.setProperty('--arm', NAMES[btn.dataset.arm].color);
     btn.addEventListener('click', function () {
       aliases.forEach(function (b) { b.setAttribute('aria-pressed', String(b === btn)); });
       slotA.textContent = slotB.textContent = NAMES[btn.dataset.arm].name;
-      el('#email').style.setProperty('--arm-active', NAMES[btn.dataset.arm].colour);
+      el('#email').style.setProperty('--arm-active', NAMES[btn.dataset.arm].color);
     });
   });
-  el('#email').style.setProperty('--arm-active', NAMES.ctrl.colour);
+  el('#email').style.setProperty('--arm-active', NAMES.ctrl.color);
 
   /* Five provinces, every size divisible by four so 50/25/25 lands on whole
      schools. Seeded so the layout is identical on every load. */
@@ -645,7 +645,7 @@ function specKey(s) {
 function specLabel(s) {
   return OUT_LABEL[s.outcome] + ' · ' + EST_LABEL[s.est] + ' · ' + CTRL_LABEL[s.ctrl];
 }
-function normalise(s) {
+function normalize(s) {
   var out = { outcome: s.outcome, est: s.est, ctrl: s.ctrl };
   if (out.outcome === '1d') out.est = 'lpm';
   if (out.est === 'pdlasso') out.ctrl = 'sel';
@@ -1038,7 +1038,7 @@ function initCharts(data) {
       b.addEventListener('click', function () {
         var s = state[which];
         s[b.dataset.k] = b.dataset.v;
-        state[which] = normalise(s);
+        state[which] = normalize(s);
         drawCoef();
       });
     });
