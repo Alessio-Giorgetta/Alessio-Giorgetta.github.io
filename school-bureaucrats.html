@@ -242,16 +242,18 @@ details.datatable summary { cursor: pointer; color: var(--ink-soft); font-weight
 
 <div class="page-head">
   <div>
-    <h2 class="page-title">Do School Bureaucrats Discriminate against Foreigners?</h2>
+    <h2 class="page-title">Do School Bureaucrats Discriminate against Foreigners? Experimental Evidence from Italy</h2>
   </div>
 </div>
 
 <div class="experiment-note">
-  <strong>This page is an experiment.</strong> I am testing whether a paper can be read
-  interactively instead of only as a PDF. It is tentative and unfinished, just me
-  experimenting; the <a href="assets/papers/Giorgetta_School_Bureaucrats.pdf">paper</a>
-  and the <a href="assets/papers/Giorgetta_School_Bureaucrats_slides.pdf">slides</a>
-  remain the record.
+  <strong>This page is an experiment</strong> inspired by a tweet by MIT Sloan professor
+  <a href="https://www.annastansbury.com">Anna Stansbury</a>. It is tentative and
+  unfinished, just me experimenting with what additional information a website-paper can
+  bring to the community! Coefficients may differ from the
+  <a href="assets/papers/Giorgetta_School_Bureaucrats.pdf">paper</a> and details may be
+  wrong: if I ever come back to the paper this will be fixed, otherwise look at this page
+  as me learning skills for the future…
 </div>
 
 <!-- ============ PANEL 1 ============ -->
@@ -287,19 +289,17 @@ details.datatable summary { cursor: pointer; color: var(--ink-soft); font-weight
   </div>
 
   <p class="figure-note">
-    Email text as reported in the thesis, translated. The municipality named in the
-    body was personalised to each school.
+    Email text translated from Italian. The municipality named in the body was
+    personalized to each school. I report only three names here as an example; the
+    experiment used four Italian names as controls, and two French and two Arabic names
+    for treatment.
   </p>
 </section>
 
 <!-- ============ PANEL 2 ============ -->
 <section class="panel">
   <p class="eyebrow">Two · how it is assigned</p>
-  <h3>The province is the stratum</h3>
-  <p class="lede">
-    Randomisation runs inside each province, not across the country. Every treated school
-    is compared against control schools facing the same local administration.
-  </p>
+  <h3>Randomization happened at the province stratum</h3>
 
   <div class="legend">
     <span><span class="mark ctrl" style="--arm: var(--arm-ctrl)"></span> Italian signature · 50%</span>
@@ -327,11 +327,6 @@ details.datatable summary { cursor: pointer; color: var(--ink-soft); font-weight
     </div>
   </div>
 
-  <p class="figure-note">
-    Schematic: five provinces of the 103, sized for legibility. The points hold their
-    positions across all three stages, because a school's province is a fact about it
-    rather than a product of the design. The shares are the real ones.
-  </p>
   <p class="facts">
     <b>7,120</b> schools · <b>103</b> provinces · <b>18</b> regions ·
     sending randomised again across <b>9</b> working days
@@ -398,11 +393,10 @@ details.datatable summary { cursor: pointer; color: var(--ink-soft); font-weight
   <table class="readout" id="coef-table"></table>
 
   <p class="figure-note">
-    Every specification includes province (the randomisation stratum) and day-of-sending
-    fixed effects; standard errors are heteroskedasticity-robust. Logit coefficients are
-    average marginal effects. Post-double LASSO selects its own controls, following
-    Belloni, Chernozhukov and Hansen (2014). The one-day outcome was only estimated with
-    the LPM. N = 7,120 throughout.
+    Every specification includes province and day-of-sending fixed effects; standard
+    errors are heteroskedasticity-robust. Logit coefficients are presented as average
+    marginal effects. Post-double LASSO follows Belloni, Chernozhukov and Hansen (2014).
+    The one-day outcome was only estimated with the LPM. N = 7,120 throughout.
   </p>
 </section>
 
@@ -412,7 +406,7 @@ details.datatable summary { cursor: pointer; color: var(--ink-soft); font-weight
   <h3>When they do answer, what do they say?</h3>
   <p class="lede">
     Answering is only half of the behaviour. Every reply was classified as useful or not,
-    and polite or not, by a model rather than by the author's eye.
+    and polite or not.
   </p>
 
   <div class="steps" aria-label="Text-analysis pipeline">
@@ -433,11 +427,12 @@ details.datatable summary { cursor: pointer; color: var(--ink-soft); font-weight
   <table class="readout" id="nlp-table"></table>
 
   <p class="figure-note">
-    Estimated on the 5,107 schools that replied, so everything here is conditional on
-    getting an answer at all; the response margin lives in the panels above. Controls are
-    always on in these specifications. Same fixed effects and robust standard errors as
-    panel four. The two classifiers are not equally good: politeness was learned at 0.88
-    accuracy, usefulness at 0.68, so the usefulness labels carry more noise.
+    Estimated on the 5,107 schools that replied, once the 500 emails used to train the
+    NLP model are set aside. All coefficients are conditional on getting an answer at all.
+    Controls are always on in these specifications. Every specification includes province
+    and day-of-sending fixed effects; standard errors are heteroskedasticity-robust. The
+    two classifiers are not equally good: politeness was learned at 0.88 accuracy,
+    usefulness at 0.68, so the usefulness labels carry more noise.
   </p>
 
   <details class="datatable">
@@ -994,8 +989,8 @@ function initCharts(data) {
   function drawLevels() {
     el('#levels-fig').innerHTML = levelsSVG(lm, lvMode);
     el('#levels-note').innerHTML = lvMode === 'bars'
-      ? 'Levels are the control mean plus the LPM effect with no controls (Table 2); the full ' +
-        '0–100% scale keeps the bars honest, the zoom shows the inference. Arm sizes from Figure 1.'
+      ? 'Levels are the control mean plus the LPM effect with no controls (Table 2); ' +
+        'the zoom shows the inference.'
       : 'Whiskers shift the coefficient’s 95% interval to the level; the control is the ' +
         'reference and carries no interval. Joint tests, as printed on the slide figure: ' +
         'βF = βA = 0, p = 2.8×10⁻⁶ · βF = βA, p = 0.012.';
@@ -1061,9 +1056,7 @@ function initCharts(data) {
       b.setAttribute('aria-pressed', String(s[k] === v));
     });
     el('.spec-note', card).textContent =
-      s.est === 'pdlasso' ? 'Post-double LASSO chooses its own controls; the toggle is the method’s.'
-      : s.outcome === '1d' ? 'The 1-day outcome was only estimated with the LPM.'
-      : '';
+      s.outcome === '1d' ? 'The 1-day outcome was only estimated with the LPM.' : '';
   }
   function drawCoef() {
     var specs = [{ style: 'A', spec: state.A }];
