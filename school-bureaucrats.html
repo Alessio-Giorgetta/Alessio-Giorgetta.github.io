@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>School Bureaucrats, interactive · Alessio Giorgetta</title>
+<meta name="description" content="An interactive companion to the MSc thesis: the experiment, the treatment effects under every specification, the text analysis, and the regional AIPW map.">
+
+<meta property="og:type" content="article">
+<meta property="og:title" content="Do School Bureaucrats Discriminate against Foreigners? · Interactive">
+<meta property="og:description" content="The experiment, the estimates under every specification, and the regional effects, explorable.">
+<meta property="og:url" content="https://www.alessiogiorgetta.com/school-bureaucrats.html">
+<meta property="og:image" content="https://www.alessiogiorgetta.com/assets/photo.jpg">
+<meta name="twitter:card" content="summary">
+
+<script>
+  // Resolve the theme before the first paint so the page never flashes the wrong one.
+  (function () {
+    var saved = localStorage.getItem('theme');
+    var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.dataset.theme = saved || (prefersDark ? 'dark' : 'light');
+  })();
+</script>
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preload" href="assets/fonts/sans-roman.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/serif-roman.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="style.css">
+
+<style>
+/* ---- page-scoped tokens: the interactive figures ----------------------------
+   Arm palette and diverging map fills, VALIDATED 2026-08-12 with the dataviz
+   six-checks script against the site surfaces (all-pairs CVD mode):
+   light arms deltaE 18.3, dark 14.3; diverging sides pass the ordinal ramp
+   checks and the two steps meeting at zero clear CVD deltaE 13.4. Control is
+   a deliberate de-emphasis neutral; shape and label always carry identity. */
+:root {
+  --arm-ctrl: #55534d;
+  --arm-fr:   #00769c;
+  --arm-ar:   #941d1b;
+  --div-n1: #ab81ca; --div-n2: #885aa8; --div-n3: #653882;
+  --div-p1: #5da96f; --div-p2: #237c40;
+}
+:root[data-theme="dark"] {
+  --arm-ctrl: #d0cecb;
+  --arm-fr:   #409ec5;
+  --arm-ar:   #c97a63;
+  --div-n1: #c196e1; --div-n2: #9c70bc; --div-n3: #774e94;
+  --div-p1: #6cb97e; --div-p2: #33854a;
+}
+
+/* ---- shared panel chrome ---- */
+.experiment-note {
+  border: 1px solid var(--rule); border-left: 3px solid var(--accent);
+  background: var(--bg-inset); border-radius: var(--radius);
+  padding: 0.7rem 0.9rem; margin: 0 0 2.5rem;
+  font-size: var(--step--1); color: var(--ink-soft); max-width: none;
+}
+.panel { margin: 0 0 3.5rem; }
+.eyebrow {
+  font-size: var(--step--2); text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--ink-faint); font-weight: 600; margin: 0 0 0.35rem;
+}
+.panel h3 { font-family: var(--serif); font-size: var(--step-1); font-weight: 600; margin: 0 0 0.6rem; color: var(--ink); }
+.panel p.lede { color: var(--ink-soft); margin: 0 0 1.2rem; }
+
+.seg { display: inline-flex; border: 1px solid var(--rule); border-radius: var(--radius); overflow: hidden; }
+.seg button {
+  font: inherit; font-size: var(--step--2); font-family: var(--sans);
+  padding: 0.32rem 0.7rem; border: 0; background: var(--bg); color: var(--ink-soft);
+  cursor: pointer; border-left: 1px solid var(--rule);
+}
+.seg button:first-child { border-left: 0; }
+.seg button:hover:not(:disabled) { color: var(--ink); background: var(--bg-inset); }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); font-weight: 600; }
+.seg button:disabled { color: var(--rule); cursor: not-allowed; }
+
+figure { margin: 0; }
+figure svg { width: 100%; height: auto; display: block; }
+.svg-txt { font-family: var(--sans); font-size: 13px; fill: var(--ink-faint); }
+.svg-txt.strong { fill: var(--ink); font-weight: 600; }
+.svg-txt.num { font-variant-numeric: tabular-nums; }
+
+.figure-note {
+  font-size: var(--step--2); color: var(--ink-faint); margin-top: 1rem;
+  border-top: 1px solid var(--rule-soft); padding-top: 0.7rem; max-width: none;
+}
+.facts { font-size: var(--step--1); color: var(--ink-soft); margin-top: 0.4rem; max-width: none; }
+.facts b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+table.readout { border-collapse: collapse; width: 100%; margin-top: 1.1rem; font-size: var(--step--1); }
+.readout th, .readout td { text-align: left; padding: 0.4rem 0.6rem; border-bottom: 1px solid var(--rule-soft); vertical-align: top; }
+.readout th { font-size: var(--step--2); color: var(--ink-faint); font-weight: 600; }
+.readout td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.readout .spec-cell { display: inline-flex; align-items: center; gap: 0.5rem; }
+details.datatable { margin-top: 0.9rem; font-size: var(--step--1); }
+details.datatable summary { cursor: pointer; color: var(--ink-soft); font-weight: 600; font-size: var(--step--2); }
+
+/* ---- panel 1: the email ---- */
+.email {
+  border: 1px solid var(--rule); border-radius: var(--radius);
+  background: var(--bg-inset); padding: 1.1rem 1.2rem;
+  font-family: var(--serif); line-height: 1.7;
+}
+.email .from {
+  font-family: var(--sans); font-size: var(--step--2); color: var(--ink-faint);
+  border-bottom: 1px solid var(--rule-soft); padding-bottom: 0.6rem; margin-bottom: 0.9rem;
+}
+.email p { margin: 0 0 0.9rem; max-width: none; }
+.email p:last-child { margin-bottom: 0; }
+.slot {
+  font-weight: 600; color: var(--arm-active);
+  border-bottom: 2px solid var(--arm-active);
+  padding-bottom: 1px; white-space: nowrap;
+}
+.alias-picker { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.1rem; }
+.alias {
+  font: inherit; font-size: var(--step--1); font-family: var(--sans);
+  display: inline-flex; align-items: center; gap: 0.45rem;
+  padding: 0.4rem 0.8rem; border: 1px solid var(--rule); border-radius: var(--radius);
+  background: var(--bg); color: var(--ink-soft); cursor: pointer;
+}
+.alias:hover { border-color: var(--ink-faint); color: var(--ink); }
+.alias[aria-pressed="true"] { background: var(--arm); border-color: var(--arm); color: var(--bg); font-weight: 600; }
+.alias[aria-pressed="true"] .mark { background: var(--bg); border-color: var(--bg); }
+.mark { width: 11px; height: 11px; flex: none; display: inline-block; background: var(--arm); }
+.mark.ctrl { border-radius: 50%; }
+.mark.fr   { clip-path: polygon(50% 0%, 100% 100%, 0% 100%); }
+.mark.ar   { border-radius: 1px; }
+
+/* ---- panel 2: three stages ---- */
+.stages { display: flex; align-items: flex-start; gap: 0.25rem; margin: 0.4rem 0 0; }
+.stage { flex: 1 1 0; min-width: 0; }
+.stage svg { overflow: visible; }
+.stage .cap { text-align: center; margin-top: 0.7rem; max-width: none; }
+.stage .cap b { display: block; color: var(--ink); font-weight: 600; font-size: var(--step--1); font-variant-numeric: tabular-nums; }
+.stage .cap span { display: block; font-size: var(--step--2); color: var(--ink-faint); }
+.arrow { flex: 0 0 30px; align-self: center; margin-bottom: 3.2rem; color: var(--ink-faint); }
+.arrow svg { width: 100%; height: auto; display: block; }
+.prov { transition: opacity 0.15s ease; }
+@media (hover: hover) {
+  .stage-c:hover .prov { opacity: 0.25; }
+  .stage-c .prov:hover { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) { .prov { transition: none; } }
+@media (max-width: 34rem) {
+  .stages { flex-direction: column; align-items: stretch; }
+  .stage { max-width: 15rem; margin: 0 auto; }
+  .arrow { flex: none; align-self: center; margin: 0.4rem 0; width: 30px; transform: rotate(90deg); }
+}
+.legend { display: flex; flex-wrap: wrap; gap: 1.1rem; margin: 0 0 1.5rem; font-size: var(--step--1); }
+.legend > span { display: inline-flex; align-items: center; gap: 0.45rem; color: var(--ink-soft); }
+
+/* ---- panel 4: spec cards ---- */
+.spec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 0 0 1.4rem; }
+@media (max-width: 38rem) { .spec-grid { grid-template-columns: 1fr; } }
+.spec-card { border: 1px solid var(--rule); border-radius: var(--radius); background: var(--bg-inset); padding: 0.8rem 0.9rem; }
+.spec-card.off .controls-rows { opacity: 0.35; pointer-events: none; }
+.spec-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.55rem; gap: 0.5rem; flex-wrap: wrap; }
+.spec-name { display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 600; font-size: var(--step--1); color: var(--ink); }
+.spec-row { display: flex; align-items: center; gap: 0.6rem; margin: 0.45rem 0; flex-wrap: wrap; }
+.spec-row .lab { font-size: var(--step--2); color: var(--ink-faint); width: 4.6rem; flex: none; }
+.spec-note { font-size: var(--step--2); color: var(--ink-faint); margin: 0.5rem 0 0; min-height: 1.2em; max-width: none; }
+.key-dot { width: 12px; height: 12px; border-radius: 50%; flex: none; }
+.key-dot.a { background: var(--ink); }
+.key-dot.b { background: var(--bg); border: 2.5px solid var(--ink); }
+
+/* ---- panel 5: pipeline strip ---- */
+.steps { display: flex; align-items: stretch; gap: 0.5rem; margin: 0 0 1.2rem; flex-wrap: wrap; }
+.step {
+  flex: 1 1 0; min-width: 10rem;
+  border: 1px solid var(--rule); border-radius: var(--radius);
+  background: var(--bg-inset); padding: 0.6rem 0.8rem;
+  font-size: var(--step--2); color: var(--ink-soft); line-height: 1.45;
+}
+.step b { display: block; color: var(--ink); font-size: var(--step--1); }
+.step-arrow { align-self: center; color: var(--ink-faint); flex: none; }
+
+/* ---- panel 6: map ---- */
+.filters { display: flex; gap: 1.2rem; flex-wrap: wrap; align-items: center; margin: 0 0 0.5rem; }
+.filters .lab { font-size: var(--step--2); color: var(--ink-faint); font-weight: 600; margin-right: 0.4rem; }
+.ate-line { font-size: var(--step--1); color: var(--ink-soft); margin: 0.4rem 0 1.2rem; max-width: none; }
+.ate-line b { color: var(--ink); font-variant-numeric: tabular-nums; }
+.map-grid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(14rem, 0.9fr); gap: 1.4rem; align-items: start; }
+@media (max-width: 38rem) { .map-grid { grid-template-columns: 1fr; } }
+.map-box svg { width: 100%; height: auto; display: block; max-width: 26rem; margin: 0 auto; }
+.region { stroke: var(--bg); stroke-width: 1; cursor: pointer; }
+.region:hover, .region:focus { stroke: var(--ink); stroke-width: 1.5; outline: none; }
+.region.nosample { cursor: default; }
+.region-readout {
+  border: 1px solid var(--rule); border-radius: var(--radius);
+  background: var(--bg-inset); padding: 0.9rem 1rem;
+  position: sticky; top: 1rem;
+  font-size: var(--step--1); color: var(--ink-soft); min-height: 7.5rem;
+}
+.region-readout b.name { display: block; font-size: var(--step-0); color: var(--ink); font-family: var(--serif); margin-bottom: 0.2rem; }
+.region-readout .eff { font-size: var(--step-1); color: var(--ink); font-variant-numeric: tabular-nums; font-weight: 600; }
+.region-readout .sub { display: block; margin-top: 0.3rem; }
+.map-legend { display: flex; flex-wrap: wrap; gap: 0.7rem 1rem; margin: 1.1rem 0 0; font-size: var(--step--2); color: var(--ink-soft); }
+.map-legend span { display: inline-flex; align-items: center; gap: 0.4rem; }
+.map-legend i { width: 14px; height: 14px; border: 1px solid var(--rule); flex: none; }
+</style>
+</head>
+<body>
+
+<a class="skip" href="#paper-body">Skip to content</a>
+
+<header class="masthead">
+  <img class="portrait" src="assets/photo.jpg" alt="Alessio Giorgetta">
+  <div class="identity">
+    <h1><a class="plain" href="index.html">Alessio Giorgetta</a></h1>
+    <p class="role">PhD Student in Economics</p>
+    <p class="affil"><a class="quiet" href="https://economics.stanford.edu">Stanford University</a></p>
+    <p class="contact-line">
+      <a href="mailto:alessiog@stanford.edu">alessiog@stanford.edu</a>
+      <span aria-hidden="true">·</span>
+      <a href="tel:+393707085826">+39&nbsp;370&nbsp;7085826</a>
+      <span aria-hidden="true">·</span>
+      <a href="https://github.com/Alessio-Giorgetta">GitHub</a>
+    </p>
+  </div>
+</header>
+
+<nav aria-label="Sections">
+  <a href="index.html">About</a>
+  <a href="research.html">Research</a>
+  <a href="cv.html">CV</a>
+  <a href="personal.html">Elsewhere</a>
+  <button class="theme-toggle" type="button" aria-label="Switch colour theme" title="Switch colour theme">
+    <svg class="icon-moon" viewBox="0 0 24 24" width="17" height="17" aria-hidden="true">
+      <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>
+    </svg>
+    <svg class="icon-sun" viewBox="0 0 24 24" width="17" height="17" aria-hidden="true">
+      <circle cx="12" cy="12" r="4.2"/>
+      <path d="M12 1.8v2.4M12 19.8v2.4M4.6 4.6l1.7 1.7M17.7 17.7l1.7 1.7M1.8 12h2.4M19.8 12h2.4M4.6 19.4l1.7-1.7M17.7 6.3l1.7-1.7"/>
+    </svg>
+  </button>
+</nav>
+
+<main id="paper-body">
+
+<div class="page-head">
+  <div>
+    <h2 class="page-title">Do School Bureaucrats Discriminate against Foreigners?</h2>
+  </div>
+</div>
+
+<div class="experiment-note">
+  <strong>This page is an experiment.</strong> I am testing whether a paper can be read
+  interactively instead of only as a PDF. It is tentative and unfinished, just me
+  experimenting; the <a href="assets/papers/Giorgetta_School_Bureaucrats.pdf">paper</a>
+  and the <a href="assets/papers/Giorgetta_School_Bureaucrats_slides.pdf">slides</a>
+  remain the record.
+</div>
+
+<!-- ============ PANEL 1 ============ -->
+<section class="panel">
+  <p class="eyebrow">One · what varies</p>
+  <h3>The same email, three signatures</h3>
+  <p class="lede">
+    Every school received an identical enquiry about enrolment. Only the sender's name changed.
+  </p>
+
+  <div class="email" id="email">
+    <div class="from">To: the administrative office · Subject: Enrolment enquiry</div>
+    <p>Good morning, my name is <span class="slot" id="slot-a">Matteo Conti</span>.
+      I will move to Bologna next year with my family. I would like to ask when the
+      administrative office is open because I would like to ask some questions about
+      how to enrol my son.</p>
+    <p>Do I need an appointment? Are you only open during weekdays? By chance, do you
+      have afternoon activities? Are there income requirements to join them or to have
+      reductions of the cost?</p>
+    <p>Thank you,<br><span class="slot" id="slot-b">Matteo Conti</span></p>
+  </div>
+
+  <div class="alias-picker" role="group" aria-label="Choose the sender alias">
+    <button class="alias" type="button" data-arm="ctrl" aria-pressed="true">
+      <span class="mark ctrl"></span> Matteo Conti · control
+    </button>
+    <button class="alias" type="button" data-arm="fr" aria-pressed="false">
+      <span class="mark fr"></span> Antoine Lambert · French, T1
+    </button>
+    <button class="alias" type="button" data-arm="ar" aria-pressed="false">
+      <span class="mark ar"></span> Omar El Haddad · Arabic, T2
+    </button>
+  </div>
+
+  <p class="figure-note">
+    Email text as reported in the thesis, translated. The municipality named in the
+    body was personalised to each school.
+  </p>
+</section>
+
+<!-- ============ PANEL 2 ============ -->
+<section class="panel">
+  <p class="eyebrow">Two · how it is assigned</p>
+  <h3>The province is the stratum</h3>
+  <p class="lede">
+    Randomisation runs inside each province, not across the country. Every treated school
+    is compared against control schools facing the same local administration.
+  </p>
+
+  <div class="legend">
+    <span><span class="mark ctrl" style="--arm: var(--arm-ctrl)"></span> Italian signature · 50%</span>
+    <span><span class="mark fr" style="--arm: var(--arm-fr)"></span> French signature · 25%</span>
+    <span><span class="mark ar" style="--arm: var(--arm-ar)"></span> Arabic signature · 25%</span>
+  </div>
+
+  <div class="stages">
+    <div class="stage" id="stage-a">
+      <p class="cap"><b>7,120</b><span>state schools</span></p>
+    </div>
+    <div class="arrow" aria-hidden="true">
+      <svg viewBox="0 0 30 16"><path d="M0 8h23M18 3l6 5-6 5" fill="none"
+        stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="stage" id="stage-b">
+      <p class="cap"><b>103</b><span>provinces</span></p>
+    </div>
+    <div class="arrow" aria-hidden="true">
+      <svg viewBox="0 0 30 16"><path d="M0 8h23M18 3l6 5-6 5" fill="none"
+        stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="stage stage-c" id="stage-c">
+      <p class="cap"><b>50 / 25 / 25</b><span>drawn within each</span></p>
+    </div>
+  </div>
+
+  <p class="figure-note">
+    Schematic: five provinces of the 103, sized for legibility. The points hold their
+    positions across all three stages, because a school's province is a fact about it
+    rather than a product of the design. The shares are the real ones.
+  </p>
+  <p class="facts">
+    <b>7,120</b> schools · <b>103</b> provinces · <b>18</b> regions ·
+    sending randomised again across <b>9</b> working days
+  </p>
+</section>
+
+<!-- ============ PANEL 3 ============ -->
+<section class="panel">
+  <p class="eyebrow">Three · the headline</p>
+  <h3>Who gets an answer within a week</h3>
+  <p class="lede">
+    80.9% of schools answered the Italian-name control. A French signature loses six
+    points of that; an Arabic one loses two and a half.
+  </p>
+
+  <div class="mode-toggle seg" role="group" aria-label="Chart scale">
+    <button type="button" data-mode="bars" aria-pressed="true">Full scale</button>
+    <button type="button" data-mode="zoom" aria-pressed="false">Zoom on the gap</button>
+  </div>
+
+  <figure id="levels-fig" aria-live="polite" style="margin-top:1rem"></figure>
+
+  <p class="figure-note" id="levels-note"></p>
+
+  <details class="datatable">
+    <summary>Data table</summary>
+    <table class="readout" id="levels-table"></table>
+  </details>
+</section>
+
+<!-- ============ PANEL 4 ============ -->
+<section class="panel">
+  <p class="eyebrow">Four · the same answer, any way you ask</p>
+  <h3>Build the comparison yourself</h3>
+  <p class="lede">
+    Effects on the response rate, in percentage points relative to the Italian-name
+    control. Whiskers are 95% intervals. Pick any two specifications; the axis never
+    rescales, so distances stay comparable.
+  </p>
+
+  <div class="spec-grid">
+    <div class="spec-card" data-spec="A">
+      <div class="spec-head">
+        <span class="spec-name"><span class="key-dot a"></span> Specification A · filled</span>
+      </div>
+      <div class="controls-rows"></div>
+      <p class="spec-note"></p>
+    </div>
+    <div class="spec-card" data-spec="B">
+      <div class="spec-head">
+        <span class="spec-name"><span class="key-dot b"></span> Specification B · hollow</span>
+        <div class="seg" role="group" aria-label="Toggle specification B">
+          <button type="button" data-b="on" aria-pressed="true">On</button>
+          <button type="button" data-b="off" aria-pressed="false">Off</button>
+        </div>
+      </div>
+      <div class="controls-rows"></div>
+      <p class="spec-note"></p>
+    </div>
+  </div>
+
+  <figure id="coef-fig" aria-live="polite"></figure>
+
+  <table class="readout" id="coef-table"></table>
+
+  <p class="figure-note">
+    Every specification includes province (the randomisation stratum) and day-of-sending
+    fixed effects; standard errors are heteroskedasticity-robust. Logit coefficients are
+    average marginal effects. Post-double LASSO selects its own controls, following
+    Belloni, Chernozhukov and Hansen (2014). The one-day outcome was only estimated with
+    the LPM. N = 7,120 throughout.
+  </p>
+</section>
+
+<!-- ============ PANEL 5 ============ -->
+<section class="panel">
+  <p class="eyebrow">Five · the replies themselves</p>
+  <h3>When they do answer, what do they say?</h3>
+  <p class="lede">
+    Answering is only half of the behaviour. Every reply was classified as useful or not,
+    and polite or not, by a model rather than by the author's eye.
+  </p>
+
+  <div class="steps" aria-label="Text-analysis pipeline">
+    <div class="step"><b>500 replies</b> hand-labelled as useful / polite, to teach the model</div>
+    <div class="step-arrow" aria-hidden="true">→</div>
+    <div class="step"><b>BERT, Italian version</b> fine-tuned on those labels</div>
+    <div class="step-arrow" aria-hidden="true">→</div>
+    <div class="step"><b>5,107 replies</b> labelled by the model: the estimation sample</div>
+  </div>
+
+  <div class="seg" id="nlp-toggle" role="group" aria-label="Estimator for the text outcomes">
+    <button type="button" data-nlpest="lpm" aria-pressed="true">LPM</button>
+    <button type="button" data-nlpest="logit" aria-pressed="false">Logit (AME)</button>
+  </div>
+
+  <figure id="nlp-fig" aria-live="polite" style="margin-top:1rem"></figure>
+
+  <table class="readout" id="nlp-table"></table>
+
+  <p class="figure-note">
+    Estimated on the 5,107 schools that replied, so everything here is conditional on
+    getting an answer at all; the response margin lives in the panels above. Controls are
+    always on in these specifications. Same fixed effects and robust standard errors as
+    panel four. The two classifiers are not equally good: politeness was learned at 0.88
+    accuracy, usefulness at 0.68, so the usefulness labels carry more noise.
+  </p>
+
+  <details class="datatable">
+    <summary>What counted as useful, what counted as polite</summary>
+    <table class="readout">
+      <tr><th>Useful</th><td>Contains any information beyond the administrative office's
+        opening hours; a phone number to call was enough. Not useful if even the opening
+        hours are missing.</td></tr>
+      <tr><th>Polite</th><td>Includes openings and greetings, uses the formal Lei or Voi
+        form, no capslock.</td></tr>
+      <tr><th>Classifier</th><td class="num">Usefulness: accuracy 0.680 · F1 0.675 ·
+        precision 0.684 · recall 0.680.<br>Politeness: accuracy 0.88 · F1 0.874 ·
+        precision 0.883 · recall 0.88.</td></tr>
+    </table>
+  </details>
+</section>
+
+<!-- ============ PANEL 6 ============ -->
+<section class="panel">
+  <p class="eyebrow">Six · where it bites</p>
+  <h3>The same experiment, region by region</h3>
+  <p class="lede">
+    Conditional average treatment effects from a linear AIPW model. Purple means the
+    region treats foreign names worse than Italian ones; green means better. Hover, tap
+    or tab onto a region for its estimate.
+  </p>
+
+  <div class="filters">
+    <span><span class="lab">Outcome</span>
+      <span class="seg" role="group" aria-label="Outcome" id="sel-outcome">
+        <button type="button" data-v="response_1w" aria-pressed="true">Response in a week</button>
+        <button type="button" data-v="usefulness" aria-pressed="false">Useful answer</button>
+        <button type="button" data-v="politeness" aria-pressed="false">Polite answer</button>
+      </span>
+    </span>
+    <span><span class="lab">Arm</span>
+      <span class="seg" role="group" aria-label="Treatment arm" id="sel-arm">
+        <button type="button" data-v="any" aria-pressed="true">Any</button>
+        <button type="button" data-v="french" aria-pressed="false">French · T1</button>
+        <button type="button" data-v="arabic" aria-pressed="false">Arabic · T2</button>
+      </span>
+    </span>
+  </div>
+  <p class="ate-line" id="ate-line" aria-live="polite"></p>
+
+  <div class="map-grid">
+    <div class="map-box" id="map-box"></div>
+    <div>
+      <div class="region-readout" id="readout" aria-live="polite"></div>
+      <div class="map-legend" id="map-legend"></div>
+    </div>
+  </div>
+
+  <p class="figure-note">
+    Estimator: linear AIPW (Chernozhukov et al. 2018), nuisance parameters from a random
+    forest with the honesty approach (Athey and Imbens 2016), outcome and treatment
+    modelled conditional on province and day-of-sending, ten cross-fitting folds.
+    Usefulness and politeness are conditional on the school replying at all.
+    Trentino-Alto Adige and Valle d'Aosta are not in the experiment: absent from the
+    Ministry source data, and their large German- and French-speaking minorities would
+    have confounded the alias manipulation. Region boundaries: ISTAT via
+    <a href="https://github.com/openpolis/geojson-italy">openpolis</a>, CC-BY.
+  </p>
+
+  <details class="datatable">
+    <summary>Data table for the current selection</summary>
+    <table class="readout" id="map-table"></table>
+  </details>
+</section>
+
+</main>
+
+<footer>
+  <p><a href="research.html">← Back to research</a></p>
+  <p>© <span id="year">2026</span> Alessio Giorgetta</p>
+</footer>
+
+<script src="assets/data/school_bureaucrats_estimates.js"></script>
+<script src="assets/data/italy_regions.js"></script>
+
+<script>
+/* ================= shared helpers ================= */
+
+var Z = 1.959964; // 95%
+var MINUS = '−';
+function fmt1(x) { return (x < 0 ? MINUS : '') + Math.abs(x).toFixed(1); }
+function fmtPP(coef) { return fmt1(coef * 100) + ' pp'; }
+function fmtPct(x) { return (x * 100).toFixed(1) + '%'; }
+function ci(coef, se) { return [coef - Z * se, coef + Z * se]; }
+function el(q, root) { return (root || document).querySelector(q); }
+function els(q, root) { return Array.prototype.slice.call((root || document).querySelectorAll(q)); }
+
+var ARMS = [
+  { id: 'any',    label: 'Any treatment', hue: 'var(--ink)' },
+  { id: 'french', label: 'French · T1',   hue: 'var(--arm-fr)' },
+  { id: 'arabic', label: 'Arabic · T2',   hue: 'var(--arm-ar)' }
+];
+
+/* ================= panels 1 and 2: the design ================= */
+
+(function () {
+  var NAMES = {
+    ctrl: { name: 'Matteo Conti',    colour: 'var(--arm-ctrl)' },
+    fr:   { name: 'Antoine Lambert', colour: 'var(--arm-fr)' },
+    ar:   { name: 'Omar El Haddad',  colour: 'var(--arm-ar)' }
+  };
+  var slotA = el('#slot-a'), slotB = el('#slot-b');
+  var aliases = els('.alias');
+  aliases.forEach(function (btn) {
+    btn.style.setProperty('--arm', NAMES[btn.dataset.arm].colour);
+    btn.addEventListener('click', function () {
+      aliases.forEach(function (b) { b.setAttribute('aria-pressed', String(b === btn)); });
+      slotA.textContent = slotB.textContent = NAMES[btn.dataset.arm].name;
+      el('#email').style.setProperty('--arm-active', NAMES[btn.dataset.arm].colour);
+    });
+  });
+  el('#email').style.setProperty('--arm-active', NAMES.ctrl.colour);
+
+  /* Five provinces, every size divisible by four so 50/25/25 lands on whole
+     schools. Seeded so the layout is identical on every load. */
+  var PROV = [
+    { cx:  58, cy:  44, rx: 42, ry: 30, n: 12 },
+    { cx: 150, cy:  60, rx: 40, ry: 32, n: 12 },
+    { cx:  52, cy: 130, rx: 40, ry: 30, n:  8 },
+    { cx: 150, cy: 146, rx: 42, ry: 34, n: 16 },
+    { cx:  90, cy: 215, rx: 52, ry: 30, n:  8 }
+  ];
+  function rng(seed) {
+    return function () {
+      seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+      var t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+  function scatter(p, rand) {
+    var pts = [], guard = 0;
+    while (pts.length < p.n && guard++ < 6000) {
+      var a = rand() * Math.PI * 2, r = Math.sqrt(rand()) * 0.84;
+      var x = p.cx + Math.cos(a) * p.rx * r;
+      var y = p.cy + Math.sin(a) * p.ry * r;
+      var clear = pts.every(function (q) {
+        return (q.x - x) * (q.x - x) + (q.y - y) * (q.y - y) > 132;
+      });
+      if (clear) pts.push({ x: x, y: y });
+    }
+    return pts;
+  }
+  function armDraw(n, rand) {
+    var a = Array(n / 2).fill('ctrl').concat(Array(n / 4).fill('fr')).concat(Array(n / 4).fill('ar'));
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(rand() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+  var rand = rng(20260812);
+  var LAYOUT = PROV.map(function (p) { return { p: p, pts: scatter(p, rand), arm: armDraw(p.n, rand) }; });
+  var SHAPE = {
+    ctrl: function (x, y) { return '<circle cx="' + x + '" cy="' + y + '" r="4" fill="var(--arm-ctrl)"/>'; },
+    fr: function (x, y) {
+      return '<path d="M0,-4.8 4.2,3.2 -4.2,3.2Z" fill="var(--arm-fr)" transform="translate(' + x + ',' + y + ')"/>';
+    },
+    ar: function (x, y) {
+      return '<rect x="-3.6" y="-3.6" width="7.2" height="7.2" rx="1" fill="var(--arm-ar)" transform="translate(' + x + ',' + y + ')"/>';
+    }
+  };
+  var ARM_NAME = { ctrl: 'Italian', fr: 'French', ar: 'Arabic' };
+  function renderStage(stage, mode) {
+    var svg = '<svg viewBox="0 0 200 250" role="img" aria-label="' + ({
+      a: 'Every state school in Italy, as unassigned points.',
+      b: 'The same schools, enclosed one ring per province.',
+      c: 'The same schools, each drawn into one of three arms inside its own province.'
+    })[mode] + '">';
+    LAYOUT.forEach(function (g, i) {
+      var body = '';
+      if (mode !== 'a') {
+        body += '<ellipse cx="' + g.p.cx + '" cy="' + g.p.cy + '" rx="' + g.p.rx +
+                '" ry="' + g.p.ry + '" fill="var(--bg-inset)" stroke="var(--rule)"/>';
+      }
+      g.pts.forEach(function (pt, k) {
+        var x = pt.x.toFixed(1), y = pt.y.toFixed(1);
+        body += mode === 'c'
+          ? SHAPE[g.arm[k]](x, y)
+          : '<circle cx="' + x + '" cy="' + y + '" r="4" fill="none" stroke="var(--ink-faint)" stroke-width="1.3"/>';
+      });
+      svg += mode === 'a' ? body
+        : '<g class="prov"><title>Province ' + (i + 1) + ' · ' + g.p.n + ' schools' +
+          (mode === 'c' ? ', split ' + (g.p.n / 2) + ' ' + ARM_NAME.ctrl + ' · ' +
+            (g.p.n / 4) + ' ' + ARM_NAME.fr + ' · ' + (g.p.n / 4) + ' ' + ARM_NAME.ar : '') +
+          '</title>' + body + '</g>';
+    });
+    stage.insertAdjacentHTML('afterbegin', svg + '</svg>');
+  }
+  renderStage(el('#stage-a'), 'a');
+  renderStage(el('#stage-b'), 'b');
+  renderStage(el('#stage-c'), 'c');
+})();
+
+/* ================= panels 3 to 5: pure ================= */
+
+var OUTCOMES = { '1w': 'response_1w', '1d': 'response_1d' };
+var EST_LABEL = { lpm: 'LPM', logit: 'Logit (AME)', pdlasso: 'Post-double LASSO' };
+var OUT_LABEL = { '1w': '1-week response', '1d': '1-day response' };
+var CTRL_LABEL = { no: 'no controls', yes: 'with controls', sel: 'method-selected controls' };
+
+function specKey(s) {
+  return OUTCOMES[s.outcome] + '|' + s.est + '|' + (s.ctrl === 'sel' ? 'selected' : s.ctrl === 'yes');
+}
+function specLabel(s) {
+  return OUT_LABEL[s.outcome] + ' · ' + EST_LABEL[s.est] + ' · ' + CTRL_LABEL[s.ctrl];
+}
+function normalise(s) {
+  var out = { outcome: s.outcome, est: s.est, ctrl: s.ctrl };
+  if (out.outcome === '1d') out.est = 'lpm';
+  if (out.est === 'pdlasso') out.ctrl = 'sel';
+  else if (out.ctrl === 'sel') out.ctrl = 'no';
+  return out;
+}
+function indexData(data) {
+  var est = {}, joint = {};
+  data.estimates.forEach(function (e) {
+    if (e.outcome !== 'response_1w' && e.outcome !== 'response_1d') return;
+    est[e.outcome + '|' + e.estimator + '|' + e.controls + '|' + e.arm] = e;
+  });
+  data.joint_tests.forEach(function (j) {
+    if (j.outcome !== 'response_1w' && j.outcome !== 'response_1d') return;
+    joint[j.outcome + '|' + j.estimator + '|' + j.controls] = j;
+  });
+  return {
+    get: function (s, arm) { var p = specKey(s).split('|'); return est[p[0] + '|' + p[1] + '|' + p[2] + '|' + arm]; },
+    joint: function (s) { var p = specKey(s).split('|'); return joint[p[0] + '|' + p[1] + '|' + p[2]]; }
+  };
+}
+
+var LV = {
+  W: 660, H: 300,
+  padL: 52, padR: 16, padT: 24, padB: 52,
+  arms: [
+    { id: 'ctrl', label: 'Italian signature', sub: 'control · N = 3,582', hue: 'var(--arm-ctrl)' },
+    { id: 'fr',   label: 'French signature',  sub: 'T1 · N = 1,794',      hue: 'var(--arm-fr)' },
+    { id: 'ar',   label: 'Arabic signature',  sub: 'T2 · N = 1,744',      hue: 'var(--arm-ar)' }
+  ]
+};
+function levelsModel(data) {
+  var cm = 0.809, get = indexData(data).get;
+  var spec = { outcome: '1w', est: 'lpm', ctrl: 'no' };
+  var f = get(spec, 'french'), a = get(spec, 'arabic');
+  return {
+    ctrl: { level: cm, beta: null },
+    fr:   { level: cm + f.est[0], beta: f },
+    ar:   { level: cm + a.est[0], beta: a }
+  };
+}
+function levelsSVG(m, mode) {
+  var W = LV.W, H = LV.H, padL = LV.padL, padT = LV.padT;
+  var plotW = W - padL - LV.padR, plotH = H - padT - LV.padB;
+  var dom = mode === 'bars' ? [0, 1] : [0.65, 0.85];
+  function y(v) { return padT + plotH * (1 - (v - dom[0]) / (dom[1] - dom[0])); }
+  var mid = padL + plotW / 2, gap = 150;
+  var xs = [mid - gap, mid, mid + gap];
+
+  var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Response rates within one week by arm">';
+  var ticks = mode === 'bars' ? [0, 0.25, 0.5, 0.75, 1] : [0.65, 0.70, 0.75, 0.80, 0.85];
+  ticks.forEach(function (t) {
+    s += '<line x1="' + padL + '" x2="' + (W - LV.padR) + '" y1="' + y(t) + '" y2="' + y(t) +
+         '" stroke="var(--rule-soft)" stroke-width="1"/>';
+    s += '<text class="svg-txt num" x="' + (padL - 8) + '" y="' + (y(t) + 4) + '" text-anchor="end">' +
+         Math.round(t * 100) + '%</text>';
+  });
+
+  LV.arms.forEach(function (arm, i) {
+    var v = m[arm.id].level, cx = xs[i];
+    var tip = arm.label + ': ' + fmtPct(v);
+    if (m[arm.id].beta) {
+      var b = m[arm.id].beta, c = ci(b.est[0], b.est[1]);
+      tip += ' · effect ' + fmtPP(b.est[0]) + b.est[2] +
+             ' [' + fmt1(c[0] * 100) + ', ' + fmt1(c[1] * 100) + ']';
+    }
+    if (mode === 'bars') {
+      var w = 24, x0 = cx - w / 2, yTop = y(v), r = 4;
+      s += '<g><title>' + tip + '</title>';
+      s += '<path d="M' + x0 + ',' + y(0) + ' V' + (yTop + r) +
+           ' Q' + x0 + ',' + yTop + ' ' + (x0 + r) + ',' + yTop +
+           ' H' + (x0 + w - r) +
+           ' Q' + (x0 + w) + ',' + yTop + ' ' + (x0 + w) + ',' + (yTop + r) +
+           ' V' + y(0) + ' Z" fill="' + arm.hue + '"/>';
+      s += '<text class="svg-txt strong num" x="' + cx + '" y="' + (yTop - 8) +
+           '" text-anchor="middle">' + fmtPct(v) + '</text>';
+      s += '<rect x="' + (x0 - 14) + '" y="' + padT + '" width="' + (w + 28) + '" height="' + plotH +
+           '" fill="transparent"/></g>';
+    } else {
+      s += '<g><title>' + tip + '</title>';
+      if (m[arm.id].beta) {
+        var cc = ci(m[arm.id].beta.est[0], m[arm.id].beta.est[1]);
+        s += '<line x1="' + cx + '" x2="' + cx + '" y1="' + y(0.809 + cc[0]) + '" y2="' + y(0.809 + cc[1]) +
+             '" stroke="' + arm.hue + '" stroke-width="2"/>';
+      }
+      s += '<circle cx="' + cx + '" cy="' + y(v) + '" r="8" fill="var(--bg)"/>' +
+           '<circle cx="' + cx + '" cy="' + y(v) + '" r="6" fill="' + arm.hue + '"/>';
+      var lbl = m[arm.id].beta
+        ? 'β = ' + fmtPP(m[arm.id].beta.est[0]) + ' ' + m[arm.id].beta.est[2]
+        : fmtPct(v) + ' · reference';
+      s += '<text class="svg-txt num" x="' + (cx + 14) + '" y="' + (y(v) + 4) + '">' + lbl + '</text>';
+      s += '<rect x="' + (cx - 30) + '" y="' + padT + '" width="60" height="' + plotH +
+           '" fill="transparent"/></g>';
+    }
+    s += '<text class="svg-txt strong" x="' + cx + '" y="' + (H - 30) + '" text-anchor="middle">' + arm.label + '</text>';
+    s += '<text class="svg-txt num" x="' + cx + '" y="' + (H - 12) + '" text-anchor="middle">' + arm.sub + '</text>';
+  });
+
+  s += '<line x1="' + padL + '" x2="' + (W - LV.padR) + '" y1="' + y(dom[0]) + '" y2="' + y(dom[0]) +
+       '" stroke="var(--ink-faint)" stroke-width="1"/>';
+  return s + '</svg>';
+}
+
+var CF = {
+  W: 660, padL: 108, padR: 20, padT: 14, rowH: 64, axisH: 40,
+  dom: [-0.13, 0.03],
+  ticks: [-0.12, -0.10, -0.08, -0.06, -0.04, -0.02, 0, 0.02]
+};
+function cfX(v) {
+  var plotW = CF.W - CF.padL - CF.padR;
+  return CF.padL + plotW * (v - CF.dom[0]) / (CF.dom[1] - CF.dom[0]);
+}
+function coefSVG(idx, specs) {
+  var H = CF.padT + ARMS.length * CF.rowH + CF.axisH;
+  var s = '<svg viewBox="0 0 ' + CF.W + ' ' + H +
+    '" role="img" aria-label="Treatment effects with 95% intervals under the chosen specifications">';
+  var plotBottom = CF.padT + ARMS.length * CF.rowH;
+  CF.ticks.forEach(function (t) {
+    var x = cfX(t), zero = Math.abs(t) < 1e-9;
+    s += '<line x1="' + x + '" x2="' + x + '" y1="' + CF.padT + '" y2="' + plotBottom +
+         '" stroke="' + (zero ? 'var(--ink-faint)' : 'var(--rule-soft)') + '" stroke-width="1"/>';
+    s += '<text class="svg-txt num" x="' + x + '" y="' + (plotBottom + 20) + '" text-anchor="middle">' +
+         (t > 0 ? '+' : '') + Math.round(t * 100) + '</text>';
+  });
+  s += '<text class="svg-txt" x="' + (CF.W - CF.padR) + '" y="' + (plotBottom + 36) +
+       '" text-anchor="end">percentage points vs control</text>';
+
+  ARMS.forEach(function (arm, i) {
+    var yMid = CF.padT + i * CF.rowH + CF.rowH / 2;
+    if (i > 0) s += '<line x1="0" x2="' + (CF.W - CF.padR) + '" y1="' + (CF.padT + i * CF.rowH) +
+      '" y2="' + (CF.padT + i * CF.rowH) + '" stroke="var(--rule-soft)" stroke-width="1"/>';
+    s += '<text class="svg-txt strong" x="0" y="' + (yMid + 4) + '">' + arm.label + '</text>';
+    specs.forEach(function (sp) {
+      var rec = idx.get(sp.spec, arm.id);
+      if (!rec) return;
+      var coef = rec.est[0], se = rec.est[1], stars = rec.est[2];
+      var cc = ci(coef, se);
+      var yy = specs.length === 1 ? yMid : (sp.style === 'A' ? yMid - 9 : yMid + 11);
+      var hue = arm.hue;
+      var tip = sp.style + ' · ' + specLabel(sp.spec) + ' · ' + arm.label + ': ' +
+        fmtPP(coef) + (stars ? ' ' + stars : '') +
+        ' [' + fmt1(cc[0] * 100) + ', ' + fmt1(cc[1] * 100) + '] · SE ' + fmt1(se * 100);
+      s += '<g><title>' + tip + '</title>';
+      s += '<line x1="' + cfX(cc[0]) + '" x2="' + cfX(cc[1]) + '" y1="' + yy + '" y2="' + yy +
+           '" stroke="' + hue + '" stroke-width="2"/>';
+      s += '<circle cx="' + cfX(coef) + '" cy="' + yy + '" r="8" fill="var(--bg)"/>';
+      s += sp.style === 'A'
+        ? '<circle cx="' + cfX(coef) + '" cy="' + yy + '" r="5.5" fill="' + hue + '"/>'
+        : '<circle cx="' + cfX(coef) + '" cy="' + yy + '" r="5" fill="var(--bg)" stroke="' + hue + '" stroke-width="2.5"/>';
+      s += '<rect x="' + (cfX(cc[0]) - 8) + '" y="' + (yy - 12) + '" width="' +
+           (cfX(cc[1]) - cfX(cc[0]) + 16) + '" height="24" fill="transparent"/></g>';
+    });
+  });
+  return s + '</svg>';
+}
+
+var NLP = {
+  W: 660, padL: 108, padR: 12, padT: 40, rowH: 56, axisH: 40, gapF: 30,
+  dom: [-0.13, 0.02],
+  ticks: [-0.12, -0.08, -0.04, 0],
+  facets: [
+    { id: 'usefulness', title: 'Useful answer' },
+    { id: 'politeness', title: 'Polite answer' }
+  ]
+};
+/* The authority rule lives here: for the text outcomes the LPM rows exist in
+   two variants and only "slides" may be displayed. Logit rows are unique. */
+function nlpIndex(data) {
+  var store = {}, joint = {};
+  data.estimates.forEach(function (e) {
+    if (e.outcome !== 'usefulness' && e.outcome !== 'politeness') return;
+    if (e.estimator === 'lpm' && e.variant !== 'slides') return;
+    store[e.outcome + '|' + e.estimator + '|' + e.arm] = e;
+  });
+  data.joint_tests.forEach(function (j) {
+    if (j.outcome !== 'usefulness' && j.outcome !== 'politeness') return;
+    if (j.estimator === 'lpm' && j.variant !== 'slides') return;
+    joint[j.outcome + '|' + j.estimator] = j;
+  });
+  return {
+    get: function (outcome, est, arm) { return store[outcome + '|' + est + '|' + arm]; },
+    joint: function (outcome, est) { return joint[outcome + '|' + est]; }
+  };
+}
+function nlpSVG(nidx, est) {
+  var facetW = (NLP.W - NLP.padL - NLP.padR - NLP.gapF) / 2;
+  var H = NLP.padT + ARMS.length * NLP.rowH + NLP.axisH;
+  function fx(f, v) {
+    var x0 = NLP.padL + f * (facetW + NLP.gapF);
+    return x0 + facetW * (v - NLP.dom[0]) / (NLP.dom[1] - NLP.dom[0]);
+  }
+  var plotBottom = NLP.padT + ARMS.length * NLP.rowH;
+  var s = '<svg viewBox="0 0 ' + NLP.W + ' ' + H +
+    '" role="img" aria-label="Treatment effects on usefulness and politeness of replies, with 95% intervals">';
+  NLP.facets.forEach(function (facet, f) {
+    var base = nidx.get(facet.id, est, 'any').control_mean;
+    s += '<text class="svg-txt strong" x="' + fx(f, NLP.dom[0]) + '" y="14">' + facet.title + '</text>';
+    s += '<text class="svg-txt num" x="' + fx(f, NLP.dom[0]) + '" y="30">base rate ' + fmtPct(base) + '</text>';
+    NLP.ticks.forEach(function (t) {
+      var x = fx(f, t), zero = Math.abs(t) < 1e-9;
+      s += '<line x1="' + x + '" x2="' + x + '" y1="' + NLP.padT + '" y2="' + plotBottom +
+           '" stroke="' + (zero ? 'var(--ink-faint)' : 'var(--rule-soft)') + '" stroke-width="1"/>';
+      s += '<text class="svg-txt num" x="' + x + '" y="' + (plotBottom + 20) + '" text-anchor="middle">' +
+           Math.round(t * 100) + '</text>';
+    });
+    ARMS.forEach(function (arm, i) {
+      var yMid = NLP.padT + i * NLP.rowH + NLP.rowH / 2;
+      if (f === 0) {
+        s += '<text class="svg-txt strong" x="0" y="' + (yMid + 4) + '">' + arm.label + '</text>';
+        if (i > 0) s += '<line x1="0" x2="' + (NLP.W - NLP.padR) + '" y1="' + (NLP.padT + i * NLP.rowH) +
+          '" y2="' + (NLP.padT + i * NLP.rowH) + '" stroke="var(--rule-soft)" stroke-width="1"/>';
+      }
+      var rec = nidx.get(facet.id, est, arm.id);
+      if (!rec) return;
+      var coef = rec.est[0], se = rec.est[1], stars = rec.est[2];
+      var cc = ci(coef, se), hue = arm.hue;
+      var tip = facet.title + ' · ' + arm.label + ': ' + fmtPP(coef) + (stars ? ' ' + stars : '') +
+        ' [' + fmt1(cc[0] * 100) + ', ' + fmt1(cc[1] * 100) + '] · SE ' + fmt1(se * 100) +
+        ' · ' + fmt1(coef / rec.control_mean * 100) + '% of the base rate · N = 5,107';
+      s += '<g><title>' + tip + '</title>';
+      s += '<line x1="' + fx(f, cc[0]) + '" x2="' + fx(f, cc[1]) + '" y1="' + yMid + '" y2="' + yMid +
+           '" stroke="' + hue + '" stroke-width="2"/>';
+      s += '<circle cx="' + fx(f, coef) + '" cy="' + yMid + '" r="8" fill="var(--bg)"/>';
+      s += '<circle cx="' + fx(f, coef) + '" cy="' + yMid + '" r="5.5" fill="' + hue + '"/>';
+      s += '<rect x="' + (fx(f, cc[0]) - 8) + '" y="' + (yMid - 12) + '" width="' +
+           (fx(f, cc[1]) - fx(f, cc[0]) + 16) + '" height="24" fill="transparent"/></g>';
+    });
+  });
+  s += '<text class="svg-txt" x="' + (NLP.W - NLP.padR) + '" y="' + (plotBottom + 36) +
+       '" text-anchor="end">percentage points vs control · conditional on a reply</text>';
+  return s + '</svg>';
+}
+
+/* ================= panel 6: pure ================= */
+
+var MAP_OUT_LABEL = {
+  response_1w: 'response within a week',
+  usefulness: 'useful answer',
+  politeness: 'polite answer'
+};
+var MAP_ARM_LABEL = { any: 'any treatment', french: 'French alias (T1)', arabic: 'Arabic alias (T2)' };
+
+var BINS = [
+  { max: -15,      cls: 'n3', fill: 'var(--div-n3)', label: '≤ −15' },
+  { max: -7.5,     cls: 'n2', fill: 'var(--div-n2)', label: '−15 to −7.5' },
+  { max: 0,        cls: 'n1', fill: 'var(--div-n1)', label: '−7.5 to 0' },
+  { max: 7.5,      cls: 'p1', fill: 'var(--div-p1)', label: '0 to +7.5' },
+  { max: Infinity, cls: 'p2', fill: 'var(--div-p2)', label: '> +7.5' }
+];
+function binOf(coef) {
+  var pp = coef * 100;
+  for (var i = 0; i < BINS.length; i++) if (pp <= BINS[i].max) return BINS[i];
+  return BINS[BINS.length - 1];
+}
+function cateFor(data, outcome) { return data.cate_regions.outcomes[outcome]; }
+function regionRecord(data, outcome, arm, iso) {
+  var o = cateFor(data, outcome);
+  for (var i = 0; i < o.regions.length; i++) if (o.regions[i].iso === iso) return o.regions[i];
+  return null;
+}
+function readoutText(data, outcome, arm, iso, geoName) {
+  var excluded = (data.cate_regions.excluded_regions || []).some(function (r) { return r.iso === iso; });
+  if (excluded) {
+    return { name: geoName, eff: 'Not in the experiment',
+      sub: 'Absent from the Ministry data; a large German- or French-speaking minority would have confounded the alias manipulation.' };
+  }
+  var r = regionRecord(data, outcome, arm, iso);
+  var v = r[arm], cc = ci(v[0], v[1]);
+  var sig = v[2] === '**' ? 'significant at the 1% level'
+          : v[2] === '*'  ? 'significant at the 5% level'
+          : v[2] === '~'  ? 'significant at the 10% level'
+          : 'not distinguishable from zero at the 10% level';
+  return {
+    name: r.name,
+    eff: fmtPP(v[0]) + (v[2] ? ' ' + v[2] : ''),
+    sub: MAP_OUT_LABEL[outcome] + ' · ' + MAP_ARM_LABEL[arm] + ' · 95% CI [' + fmt1(cc[0] * 100) +
+         ', ' + fmt1(cc[1] * 100) + '] · SE ' + fmt1(v[1] * 100) + ' · ' + sig + '.'
+  };
+}
+function mapSVG(data, geo, viewBox, outcome, arm) {
+  var excluded = {};
+  (data.cate_regions.excluded_regions || []).forEach(function (r) { excluded[r.iso] = true; });
+  var s = '<svg viewBox="' + viewBox + '" role="group" aria-label="Map of Italian regions, ' +
+    MAP_OUT_LABEL[outcome] + ', ' + MAP_ARM_LABEL[arm] + '">';
+  s += '<defs><pattern id="nosample" width="6" height="6" patternUnits="userSpaceOnUse" ' +
+       'patternTransform="rotate(45)"><rect width="6" height="6" fill="var(--bg-inset)"/>' +
+       '<line x1="0" y1="0" x2="0" y2="6" stroke="var(--rule)" stroke-width="1.4"/></pattern></defs>';
+  Object.keys(geo).forEach(function (iso) {
+    var g = geo[iso];
+    if (excluded[iso]) {
+      s += '<path class="region nosample" d="' + g.d + '" fill="url(#nosample)" data-iso="' + iso +
+           '" tabindex="0" role="img" aria-label="' + g.name + ': not in the experiment">' +
+           '<title>' + g.name + ' · not in the experiment</title></path>';
+      return;
+    }
+    var r = regionRecord(data, outcome, arm, iso);
+    var v = r[arm], bin = binOf(v[0]);
+    var tip = r.name + ': ' + fmtPP(v[0]) + (v[2] ? ' ' + v[2] : '') + ' (SE ' + fmt1(v[1] * 100) + ')';
+    s += '<path class="region" d="' + g.d + '" fill="' + bin.fill + '" data-iso="' + iso +
+         '" tabindex="0" role="img" aria-label="' + tip + '"><title>' + tip + '</title></path>';
+  });
+  return s + '</svg>';
+}
+function mapLegendHTML() {
+  var h = BINS.map(function (b) {
+    return '<span><i style="background:' + b.fill + '"></i>' + b.label + ' pp</span>';
+  }).join('');
+  h += '<span><i style="background:repeating-linear-gradient(45deg,var(--bg-inset),var(--bg-inset) 3px,var(--rule) 3px,var(--rule) 4px)"></i>not in the experiment</span>';
+  return h;
+}
+function ateHTML(data, outcome, arm) {
+  var o = cateFor(data, outcome);
+  var a = o.ate[arm], m = o.control_mean[arm];
+  return 'Italy-wide ATE for this selection: <b>' + fmtPP(a[0]) + (a[2] ? ' ' + a[2] : '') +
+    '</b> (SE ' + fmt1(a[1] * 100) + ') · control mean ' + (m[0] * 100).toFixed(1) + '%';
+}
+function mapTableHTML(data, outcome, arm) {
+  var o = cateFor(data, outcome);
+  var rows = o.regions.slice().sort(function (a, b) { return a[arm][0] - b[arm][0]; });
+  var h = '<tr><th>Region</th><th>Effect</th><th>SE</th><th>95% CI</th></tr>';
+  rows.forEach(function (r) {
+    var v = r[arm], cc = ci(v[0], v[1]);
+    h += '<tr><td>' + r.name + '</td><td class="num">' + fmtPP(v[0]) +
+      (v[2] ? ' ' + v[2] : '') + '</td><td class="num">' + fmt1(v[1] * 100) +
+      '</td><td class="num">[' + fmt1(cc[0] * 100) + ', ' + fmt1(cc[1] * 100) + ']</td></tr>';
+  });
+  var a = o.ate[arm];
+  h += '<tr><td><b>Italy-wide ATE</b></td><td class="num"><b>' + fmtPP(a[0]) +
+    (a[2] ? ' ' + a[2] : '') + '</b></td><td class="num">' + fmt1(a[1] * 100) +
+    '</td><td class="num">[' + fmt1(ci(a[0], a[1])[0] * 100) + ', ' + fmt1(ci(a[0], a[1])[1] * 100) + ']</td></tr>';
+  return h;
+}
+
+/* ================= DOM wiring ================= */
+
+function initCharts(data) {
+  var idx = indexData(data);
+  var lm = levelsModel(data);
+
+  var lvMode = 'bars';
+  function drawLevels() {
+    el('#levels-fig').innerHTML = levelsSVG(lm, lvMode);
+    el('#levels-note').innerHTML = lvMode === 'bars'
+      ? 'Levels are the control mean plus the LPM effect with no controls (Table 2); the full ' +
+        '0–100% scale keeps the bars honest, the zoom shows the inference. Arm sizes from Figure 1.'
+      : 'Whiskers shift the coefficient’s 95% interval to the level; the control is the ' +
+        'reference and carries no interval. Joint tests, as printed on the slide figure: ' +
+        'βF = βA = 0, p = 2.8×10⁻⁶ · βF = βA, p = 0.012.';
+    els('.mode-toggle button').forEach(function (b) {
+      b.setAttribute('aria-pressed', String(b.dataset.mode === lvMode));
+    });
+  }
+  els('.mode-toggle button').forEach(function (b) {
+    b.addEventListener('click', function () { lvMode = b.dataset.mode; drawLevels(); });
+  });
+
+  el('#levels-table').innerHTML =
+    '<tr><th>Arm</th><th>Response rate</th><th>Effect vs control</th><th>95% CI</th><th>N</th></tr>' +
+    [['Italian signature (control)', lm.ctrl, '3,582'],
+     ['French signature (T1)', lm.fr, '1,794'],
+     ['Arabic signature (T2)', lm.ar, '1,744']].map(function (row) {
+      var b = row[1].beta;
+      var cc = b ? ci(b.est[0], b.est[1]) : null;
+      return '<tr><td>' + row[0] + '</td><td class="num">' + fmtPct(row[1].level) + '</td>' +
+        '<td class="num">' + (b ? fmtPP(b.est[0]) + (b.est[2] ? ' ' + b.est[2] : '') : '·') + '</td>' +
+        '<td class="num">' + (b ? '[' + fmt1(cc[0] * 100) + ', ' + fmt1(cc[1] * 100) + ']' : '·') + '</td>' +
+        '<td class="num">' + row[2] + '</td></tr>';
+    }).join('');
+
+  var state = {
+    A: { outcome: '1w', est: 'lpm', ctrl: 'no' },
+    B: { outcome: '1w', est: 'pdlasso', ctrl: 'sel' },
+    bOn: true
+  };
+  var ROWS = [
+    { key: 'outcome', lab: 'Outcome', opts: [['1w', '1 week'], ['1d', '1 day']] },
+    { key: 'est', lab: 'Estimator', opts: [['lpm', 'LPM'], ['logit', 'Logit'], ['pdlasso', 'P-D LASSO']] },
+    { key: 'ctrl', lab: 'Controls', opts: [['no', 'Off'], ['yes', 'On'], ['sel', 'Selected']] }
+  ];
+  function buildCard(which) {
+    var card = el('.spec-card[data-spec="' + which + '"]');
+    el('.controls-rows', card).innerHTML = ROWS.map(function (row) {
+      return '<div class="spec-row"><span class="lab">' + row.lab + '</span>' +
+        '<span class="seg" role="group" aria-label="' + row.lab + ' for specification ' + which + '">' +
+        row.opts.map(function (o) {
+          return '<button type="button" data-k="' + row.key + '" data-v="' + o[0] + '">' + o[1] + '</button>';
+        }).join('') + '</span></div>';
+    }).join('');
+    els('button[data-k]', card).forEach(function (b) {
+      b.addEventListener('click', function () {
+        var s = state[which];
+        s[b.dataset.k] = b.dataset.v;
+        state[which] = normalise(s);
+        drawCoef();
+      });
+    });
+  }
+  function syncCard(which) {
+    var card = el('.spec-card[data-spec="' + which + '"]');
+    var s = state[which];
+    card.classList.toggle('off', which === 'B' && !state.bOn);
+    els('button[data-k]', card).forEach(function (b) {
+      var k = b.dataset.k, v = b.dataset.v;
+      var disabled =
+        (k === 'est' && s.outcome === '1d' && v !== 'lpm') ||
+        (k === 'ctrl' && (s.est === 'pdlasso' ? v !== 'sel' : v === 'sel'));
+      b.disabled = disabled;
+      b.setAttribute('aria-pressed', String(s[k] === v));
+    });
+    el('.spec-note', card).textContent =
+      s.est === 'pdlasso' ? 'Post-double LASSO chooses its own controls; the toggle is the method’s.'
+      : s.outcome === '1d' ? 'The 1-day outcome was only estimated with the LPM.'
+      : '';
+  }
+  function drawCoef() {
+    var specs = [{ style: 'A', spec: state.A }];
+    if (state.bOn) specs.push({ style: 'B', spec: state.B });
+    el('#coef-fig').innerHTML = coefSVG(idx, specs);
+    syncCard('A'); syncCard('B');
+    els('button[data-b]').forEach(function (b) {
+      b.setAttribute('aria-pressed', String((b.dataset.b === 'on') === state.bOn));
+    });
+    el('#coef-table').innerHTML =
+      '<tr><th>Specification</th><th>Any</th><th>French · T1</th><th>Arabic · T2</th><th>T1 = T2, p</th></tr>' +
+      specs.map(function (sp) {
+        var j = idx.joint(sp.spec);
+        return '<tr><td><span class="spec-cell"><span class="key-dot ' + sp.style.toLowerCase() +
+          '"></span>' + specLabel(sp.spec) + '</span></td>' +
+          ARMS.map(function (arm) {
+            var r = idx.get(sp.spec, arm.id);
+            return '<td class="num">' + fmtPP(r.est[0]) + (r.est[2] ? ' ' + r.est[2] : '') +
+              '<br><span style="color:var(--ink-faint)">(' + fmt1(r.est[1] * 100) + ')</span></td>';
+          }).join('') +
+          '<td class="num">' + (j ? j.t1_eq_t2_p.toFixed(3) : '·') + '</td></tr>';
+      }).join('') +
+      (state.bOn && specKey(state.A) === specKey(state.B)
+        ? '<tr><td colspan="5" style="color:var(--ink-faint)">A and B are the same specification, so the hollow marks sit exactly on the filled ones.</td></tr>'
+        : '');
+  }
+  buildCard('A'); buildCard('B');
+  els('button[data-b]').forEach(function (b) {
+    b.addEventListener('click', function () { state.bOn = b.dataset.b === 'on'; drawCoef(); });
+  });
+
+  var nidx = nlpIndex(data);
+  var nlpEst = 'lpm';
+  function drawNLP() {
+    el('#nlp-fig').innerHTML = nlpSVG(nidx, nlpEst);
+    els('#nlp-toggle button').forEach(function (b) {
+      b.setAttribute('aria-pressed', String(b.dataset.nlpest === nlpEst));
+    });
+    el('#nlp-table').innerHTML =
+      '<tr><th>Arm</th><th>Useful · effect</th><th>· of base</th>' +
+      '<th>Polite · effect</th><th>· of base</th></tr>' +
+      ARMS.map(function (arm) {
+        return '<tr><td>' + arm.label + '</td>' + NLP.facets.map(function (facet) {
+          var r = nidx.get(facet.id, nlpEst, arm.id);
+          return '<td class="num">' + fmtPP(r.est[0]) + (r.est[2] ? ' ' + r.est[2] : '') +
+            ' <span style="color:var(--ink-faint)">(' + fmt1(r.est[1] * 100) + ')</span></td>' +
+            '<td class="num">' + fmt1(r.est[0] / r.control_mean * 100) + '%</td>';
+        }).join('') + '</tr>';
+      }).join('') +
+      '<tr><td style="color:var(--ink-faint)">T1 = T2, p</td>' + NLP.facets.map(function (facet) {
+        var j = nidx.joint(facet.id, nlpEst);
+        return '<td class="num" colspan="2">' + (j ? j.t1_eq_t2_p.toFixed(3) : '·') + '</td>';
+      }).join('') + '</tr>';
+  }
+  els('#nlp-toggle button').forEach(function (b) {
+    b.addEventListener('click', function () { nlpEst = b.dataset.nlpest; drawNLP(); });
+  });
+
+  drawLevels();
+  drawCoef();
+  drawNLP();
+}
+
+function initMap(data, geo) {
+  var mapState = { outcome: 'response_1w', arm: 'any' };
+  function defaultReadout() {
+    el('#readout').innerHTML = '<b class="name">Pick a region</b>' +
+      'Hover, tap or tab onto the map. The estimate, its interval and its significance appear here.';
+  }
+  function drawMap() {
+    el('#map-box').innerHTML = mapSVG(data, geo, window.ITALY_VIEWBOX, mapState.outcome, mapState.arm);
+    el('#ate-line').innerHTML = ateHTML(data, mapState.outcome, mapState.arm);
+    el('#map-table').innerHTML = mapTableHTML(data, mapState.outcome, mapState.arm);
+    el('#map-legend').innerHTML = mapLegendHTML();
+    defaultReadout();
+    els('.region').forEach(function (p) {
+      function show() {
+        var t = readoutText(data, mapState.outcome, mapState.arm, p.dataset.iso, geo[p.dataset.iso].name);
+        el('#readout').innerHTML = '<b class="name">' + t.name + '</b>' +
+          '<span class="eff">' + t.eff + '</span><span class="sub">' + t.sub + '</span>';
+      }
+      p.addEventListener('mouseenter', show);
+      p.addEventListener('focus', show);
+      p.addEventListener('click', show);
+    });
+    els('#sel-outcome button').forEach(function (b) {
+      b.setAttribute('aria-pressed', String(b.dataset.v === mapState.outcome));
+    });
+    els('#sel-arm button').forEach(function (b) {
+      b.setAttribute('aria-pressed', String(b.dataset.v === mapState.arm));
+    });
+  }
+  els('#sel-outcome button').forEach(function (b) {
+    b.addEventListener('click', function () { mapState.outcome = b.dataset.v; drawMap(); });
+  });
+  els('#sel-arm button').forEach(function (b) {
+    b.addEventListener('click', function () { mapState.arm = b.dataset.v; drawMap(); });
+  });
+  drawMap();
+}
+
+(function () {
+  var data = window.SCHOOL_BUREAUCRATS_DATA, geo = window.ITALY_REGIONS;
+  if (!data || !geo) {
+    ['levels-fig', 'coef-fig', 'nlp-fig', 'map-box'].forEach(function (id) {
+      var node = el('#' + id);
+      if (node) node.innerHTML = '<p class="figure-note">The data files failed to load; ' +
+        'the figures cannot render. The paper PDF above has every number.</p>';
+    });
+    return;
+  }
+  initCharts(data);
+  initMap(data, geo);
+})();
+
+/* ================= site chrome ================= */
+
+document.getElementById('year').textContent = new Date().getFullYear();
+
+document.querySelector('.theme-toggle').addEventListener('click', function () {
+  var root = document.documentElement;
+  var next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+  root.dataset.theme = next;
+  localStorage.setItem('theme', next);
+});
+
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function (e) {
+  if (!localStorage.getItem('theme')) {
+    document.documentElement.dataset.theme = e.matches ? 'dark' : 'light';
+  }
+});
+</script>
+</body>
+</html>

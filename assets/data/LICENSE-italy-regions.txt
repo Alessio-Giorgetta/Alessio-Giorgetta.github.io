@@ -1,0 +1,26 @@
+Region boundary geometry: italy_regions.js
+============================================
+
+The polygon geometry in italy_regions.js is derived from Italian
+administrative boundaries:
+
+  - Original data: ISTAT (Istituto Nazionale di Statistica),
+    "Confini delle unita amministrative a fini statistici".
+    Copyright ISTAT, released under the CC-BY licence.
+  - Intermediate processing: the openpolis/geojson-italy project
+    (https://github.com/openpolis/geojson-italy), which converts the
+    ISTAT data to GeoJSON and releases it under CC-BY 4.0.
+    Boundaries as of June 2023 (repository master branch),
+    downloaded 2026-08-12.
+  - Local processing for this site: equirectangular projection,
+    Douglas-Peucker simplification (tolerance 1.2px at 560px height),
+    outer rings only, islets under 4px^2 dropped, keyed by
+    ISO 3166-2:IT code.
+
+Licence: Creative Commons Attribution 4.0 International (CC-BY 4.0)
+https://creativecommons.org/licenses/by/4.0/
+
+Attribution, as displayed on the page using this file:
+  "Region boundaries: ISTAT via openpolis, CC-BY"
+
+This file must travel with italy_regions.js.
