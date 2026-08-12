@@ -105,9 +105,14 @@
   --radius-sm: 2px;
 }
 
-/* The dark palette lives in exactly one place. The small script in each page's
-   <head> resolves the saved choice, or the system preference, into
-   data-theme on <html> before the first paint, so there is no flash.
+/* The dark palette's values live in exactly one place, the --dk-* block below.
+   Two selectors map them onto the real tokens: data-theme="dark" for the
+   normal path, and a prefers-color-scheme query for the reader whose JS is
+   off. Both read the same variables, so a value is still changed once.
+
+   The small script in each page's <head> resolves the saved choice, or the
+   system preference, into data-theme on <html> before the first paint, so
+   there is no flash.
 
    Dark mode is where the old palette was weakest: --ink-soft sat at Lc 52.8
    (APCA "headline only") while carrying abstracts and CV bullets, and
@@ -117,24 +122,63 @@
    the comfortable dark-surface range around RGB 30–40, and lifting it also
    reduces the glow that pure-dark backgrounds produce for readers with
    astigmatism. */
+:root {
+  --dk-ink:        #e9e7e3;   /* Lc 90 */
+  --dk-ink-soft:   #d0cecb;   /* Lc 75 · was Lc 52.8 */
+  --dk-ink-faint:  #b6b4b0;   /* Lc 60 · was Lc 31.2 */
+  --dk-rule:       #625e58;   /* Lc 18 · was Lc 0.0, literally below the visibility floor */
+  --dk-rule-soft:  #403d39;
+  --dk-bg:         #201f1c;
+  --dk-bg-inset:   #282621;
+  --dk-accent:     #f0a48d;   /* Lc 61 · see note below */
+  --dk-accent-ink: #201f1c;
+  --dk-todo-bg:    #2b2410;
+  --dk-todo-edge:  #7a6420;
+}
+
 :root[data-theme="dark"] {
   color-scheme: dark;
 
-  --ink:        #e9e7e3;   /* Lc 90 */
-  --ink-soft:   #d0cecb;   /* Lc 75 · was Lc 52.8 */
-  --ink-faint:  #b6b4b0;   /* Lc 60 · was Lc 31.2 */
-  --rule:       #625e58;   /* Lc 18 · was Lc 0.0, literally below the visibility floor */
-  --rule-soft:  #403d39;
-  --bg:         #201f1c;
-  --bg-inset:   #282621;
-  --accent:     #f0a48d;   /* Lc 61 · see note below */
-  --accent-ink: #201f1c;
+  --ink:        var(--dk-ink);
+  --ink-soft:   var(--dk-ink-soft);
+  --ink-faint:  var(--dk-ink-faint);
+  --rule:       var(--dk-rule);
+  --rule-soft:  var(--dk-rule-soft);
+  --bg:         var(--dk-bg);
+  --bg-inset:   var(--dk-bg-inset);
+  --accent:     var(--dk-accent);
+  --accent-ink: var(--dk-accent-ink);
 
-  --todo-bg:   #2b2410;
-  --todo-edge: #7a6420;
+  --todo-bg:   var(--dk-todo-bg);
+  --todo-edge: var(--dk-todo-edge);
 
   --icon-moon: none;
   --icon-sun:  block;
+}
+
+/* No JS means the head script never ran and no data-theme was set, so the
+   system preference is all there is to go on. The :not() guard keeps an
+   explicit choice of light winning when the script did run. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+
+    --ink:        var(--dk-ink);
+    --ink-soft:   var(--dk-ink-soft);
+    --ink-faint:  var(--dk-ink-faint);
+    --rule:       var(--dk-rule);
+    --rule-soft:  var(--dk-rule-soft);
+    --bg:         var(--dk-bg);
+    --bg-inset:   var(--dk-bg-inset);
+    --accent:     var(--dk-accent);
+    --accent-ink: var(--dk-accent-ink);
+
+    --todo-bg:   var(--dk-todo-bg);
+    --todo-edge: var(--dk-todo-edge);
+
+    --icon-moon: none;
+    --icon-sun:  block;
+  }
 }
 
 /* Note on the dark accent: red is an intrinsically dark hue, so pushing it to
@@ -293,6 +337,23 @@ a {
   transition: text-decoration-color 0.15s;
 }
 a:hover { text-decoration-color: currentColor; }
+
+/* A recessed panel of prose, same construction as .abstract so the two read as
+   one family: inset ground, accent rule on the leading edge, nothing new to
+   re-measure. Sits at body size because it is meant to be read, not skimmed. */
+.callout {
+  max-width: var(--measure);
+  margin: 2rem 0;
+  padding: 1rem 1.2rem;
+  background: var(--bg-inset);
+  border-left: 2px solid var(--accent);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  color: var(--ink-soft);
+  line-height: 1.68;
+}
+.callout p { margin: 0; max-width: none; }
+.callout p + p { margin-top: 0.7rem; }
+.callout strong { color: var(--ink); font-weight: 600; }
 
 /* ---------- research projects ---------- */
 
