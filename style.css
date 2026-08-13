@@ -711,9 +711,17 @@ a.quiet:hover { color: var(--accent); text-decoration-color: currentColor; }
 
 .shot--1 { grid-column: 1 / 6; }
 .shot--2 { grid-column: 8 / 13; margin-top: 5rem; }
-.shot--3 { grid-column: 1 / 12; margin-top: 1rem; }
+/* Was 1 / 12, which left column 12 empty and hung the whole photo to the left. */
+.shot--3 { grid-column: 1 / -1; margin-top: 1rem; }
 .shot--4 { grid-column: 1 / 6; margin-top: 4rem; }
 .shot--5 { grid-column: 8 / 13; }
+
+/* The 32ch measure above is sized for the narrow five-column shots. The wide
+   one runs the full width, and 32ch is 229px there, which broke the bar joke
+   across two lines and stranded the punchline on its own. Measured in the
+   shipped subset: the caption is 430px at 14.4px against a 640px column, so it
+   sits on one line with room to spare, and still wraps normally on a phone. */
+.shot--3 figcaption { max-width: none; }
 
 /* ---------- caption footnotes ----------
 
