@@ -200,14 +200,32 @@ details.datatable summary { cursor: pointer; color: var(--ink-soft); font-weight
 .map-legend { display: flex; flex-wrap: wrap; gap: 0.7rem 1rem; margin: 1.1rem 0 0; font-size: var(--step--2); color: var(--ink-soft); }
 .map-legend span { display: inline-flex; align-items: center; gap: 0.4rem; }
 .map-legend i { width: 14px; height: 14px; border: 1px solid var(--rule); flex: none; }
+
+/* ---- wide screens ----
+   The rail in style.css hands this page a content column of up to 832px. The
+   figures, the stages and the map want that. The prose around them does not:
+   everything with max-width: none above was written against a 640px column
+   and would run past 100 characters here, so it is capped back to a readable
+   line. See the rail note in style.css. */
+@media screen and (min-width: 64rem) {
+  .experiment-note,
+  .figure-note,
+  .facts,
+  .ate-line,
+  .email { max-width: 42rem; }
+  table.readout { max-width: 46rem; }
+  /* the map is a shape, not a line of text, so it is allowed to grow */
+  .map-box svg { max-width: 30rem; }
+}
 </style>
 </head>
 <body>
 
 <a class="skip" href="#paper-body">Skip to content</a>
 
+<div class="rail">
+
 <header class="masthead">
-  <img class="portrait" src="assets/photo.jpg" alt="Alessio Giorgetta">
   <div class="identity">
     <h1><a class="plain" href="index.html">Alessio Giorgetta</a></h1>
     <p class="role">PhD Student in Economics</p>
@@ -235,6 +253,8 @@ details.datatable summary { cursor: pointer; color: var(--ink-soft); font-weight
     </svg>
   </button>
 </nav>
+
+</div><!-- .rail -->
 
 <main id="paper-body">
 

@@ -355,6 +355,38 @@ a:hover { text-decoration-color: currentColor; }
 .callout p + p { margin-top: 0.7rem; }
 .callout strong { color: var(--ink); font-weight: 600; }
 
+/* ---------- about page ----------
+
+   About is the one page with no figures on it, so once the rail went in it was
+   the only page still showing an empty strip on the right. The strip becomes a
+   column: a larger portrait, the fields, and the links that used to trail off
+   the bottom of the page.
+
+   Everything here is what a phone sees, where the aside simply follows the
+   prose in source order. The two-column part is in the wide-screen block. */
+
+.side-list {
+  list-style: none;
+  margin: 0 0 2rem;
+  padding: 0;
+  color: var(--ink-soft);
+  font-size: 0.97rem;
+}
+
+.side-list li { margin-bottom: 0.1rem; }
+
+.about-side h2 { margin-bottom: 0.75rem; }
+.about-side .contact-list { margin-bottom: 0; }
+
+/* Stacked under the prose, the aside needs the gap the old "Social media"
+   heading carried in .subhead--spaced. Reset once it has its own column. */
+.about-side { margin-top: 2.75rem; }
+
+/* Hidden until the aside has a column of its own. Below that width the
+   masthead is already carrying the same face, and the same face twice on one
+   screen reads as a mistake rather than as a decision. */
+.portrait-frame { display: none; }
+
 /* ---------- research projects ---------- */
 
 .subhead {
@@ -940,6 +972,203 @@ footer p { margin: 0; }
     margin-top: 0;
   }
   .shot figcaption { max-width: none; }
+}
+
+/* ---------- wide screens: the rail ----------
+
+   One centered column is the right shape for a phone and the wrong shape for
+   a laptop: the page becomes a strip of text with two empty margins. Widening
+   the paragraphs is not the fix. --measure is set at 66 characters for the
+   reason annotated above, and a 120-character line is harder to read, not
+   easier.
+
+   So the extra width goes to layout instead of to line length. Identity and
+   nav move into a rail on the left that stays put while the content scrolls,
+   and the content column keeps what is left over: 672px at the breakpoint,
+   832px from 1184px up, against the 640px the centered layout gave it at any
+   size. Figures, the gallery and the paper's charts take that room. The
+   reading measure itself never changes.
+
+   Scoped to `screen` deliberately. The print block below assumes a single
+   column, and a print canvas can be wider than 64rem. */
+
+@media screen and (min-width: 64rem) {
+
+  /* 15rem is the narrowest rail that still holds the name on two lines rather
+     than three, and "alessiog@stanford.edu" on one. Both are what set it. */
+  :root { --rail: 15rem; }
+
+  body {
+    display: grid;
+    grid-template-columns: var(--rail) minmax(0, 1fr);
+    column-gap: 4rem;
+    max-width: 74rem;
+  }
+
+  /* Placed explicitly rather than left to auto-flow, because the rail has to
+     share row 1 with <main> for the sticky to have anywhere to travel: a
+     sticky element is bounded by its own grid area, so in a row of its own it
+     would be pinned inside a box its own height and never move. align-self
+     matters for the same reason. A stretched item has no slack either. */
+  .rail   { grid-column: 1; grid-row: 1 / 3; align-self: start;
+            position: sticky; top: 2.5rem; }
+  main    { grid-column: 2; grid-row: 1; }
+  footer  { grid-column: 2; grid-row: 2; }
+
+  /* ---- inside the rail ---- */
+
+  .masthead {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.1rem;
+    margin-bottom: 1.4rem;
+  }
+
+  .portrait { width: 104px; height: 104px; }
+
+  /* One step down from --step-3: at 35.2px the name overruns a 15rem rail and
+     breaks into three lines. At 28.8px it breaks into two, which is the shape
+     the rail wants anyway. */
+  .identity h1 { font-size: var(--step-2); }
+
+  /* Stacked, the middot has nothing left to sit between. */
+  .contact-line { flex-direction: column; gap: 0.15rem; }
+  .contact-line > span[aria-hidden] { display: none; }
+
+  nav {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.55rem;
+    padding: 1rem 0;
+    margin-bottom: 0;
+  }
+
+  /* flex-start above keeps each link only as wide as its own text, so the
+     rule under the current page still sits under the word instead of running
+     the full width of the rail. The indicator itself is unchanged. */
+
+  /* margin-left: auto pushed the toggle to the far end of the row. In a
+     column it would push it to the far side of the rail. */
+  .theme-toggle { margin-left: 0; margin-top: 0.7rem; margin-right: 0; }
+
+  /* ---- inside the content column ----
+     Everything in <main> now has up to 832px. Figures and photographs should
+     use it; text should not. The blocks below are all reading matter, so they
+     stop at 42rem, which is about 80 characters at the smaller sizes the CV
+     and the contact rows are set in.
+
+     The two rules that are *not* capped are the ones under .page-head and
+     over the footer. Those two bracket the page, so they have to agree with
+     the widest thing between them: on Elsewhere a 42rem rule under the title
+     stopped 160px short of the gallery it was introducing. A section rule is
+     a different job and does stay with the text it heads. */
+
+  .entry,
+  h2,
+  .contact-list,
+  .skills,
+  .inline-list { max-width: 42rem; }
+
+  /* The h2 above is the section heading with a rule under it. .page-title is
+     an h2 too and inherits the cap, which is harmless: it carries no rule of
+     its own, and every page title already wraps well before 42rem. */
+
+  /* The 34ch measure was cut against a 250px gallery column. The column is
+     330px here, so the captions were breaking earlier than the photograph
+     above them needs them to. 40ch is 286px: wider, still inside the photo. */
+  .shot figcaption { max-width: 40ch; }
+
+  /* The wide shot spans the column and its caption is one line that has to
+     stay one line. The rule above is also a `.shot figcaption`, identical in
+     specificity and later in the file than the base `.shot--3` exception, so
+     it was quietly overriding it and breaking the joke across two lines. */
+  .shot--3 figcaption { max-width: none; }
+
+  /* The notes were the last thing left at --measure while the gallery above
+     them ran the full column, so they read as a leftover of the old layout.
+     Two columns spend the width on structure rather than on line length:
+     each note holds about 52 characters, which is where footnotes belong.
+     Every note carries both borders now, because across two columns the
+     base's :last-child rule was closing only the right-hand one. */
+  .notes {
+    max-width: none;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 2.5rem;
+  }
+
+  .notes li { border-bottom: 1px solid var(--rule-soft); }
+
+  /* The preview grows with the column, and now runs down alongside the
+     abstract rather than stopping at the title block. Keeping the abstract in
+     the middle column is also what holds its line length down: spanning all
+     three, it would be reading matter 830px wide. */
+  .project {
+    grid-template-columns: 200px minmax(0, 1fr) auto;
+    grid-template-areas:
+      "fig body year"
+      "fig abs  year";
+    column-gap: 2rem;
+  }
+}
+
+/* ---------- wide screens: the About aside ----------
+
+   Gated higher than the rail, deliberately. At 64rem the content column is
+   672px, and taking the aside's 248px plus a 40px gutter out of that would
+   leave the prose at 384px, which is 46 characters: inside Bringhurst's range
+   but sitting on its floor. From 70rem the prose holds 480px and up, and at
+   the 74rem cap it lands exactly on --measure. Between 64 and 70rem About
+   stays one column, which is the layout it had before any of this. */
+
+@media screen and (min-width: 70rem) {
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 15.5rem;
+    column-gap: 2.5rem;
+    align-items: start;
+  }
+
+  .about-side { margin-top: 0; }
+
+  /* the rail's circle steps aside for the larger one */
+  .about .portrait { display: none; }
+
+  .portrait-frame {
+    display: block;
+    overflow: hidden;
+    aspect-ratio: 4 / 5;
+    margin-bottom: 2rem;
+    border-radius: var(--radius);
+    /* the same hairline the circle carries, for the same reason */
+    box-shadow: 0 0 0 1px var(--rule);
+  }
+
+  /* photo.jpg is a 1544x1024 landscape frame with the subject small in the
+     middle of it, so plain object-fit: cover would fill this box mostly with
+     doorway. The scale crops in to head and shoulders. transform-origin is
+     the point the crop is taken around, which is why its x matches
+     object-position's.
+
+     1.4 is a ceiling, not a preference. Above it the visible region of the
+     source drops below the 620 device pixels a 310px box needs at 2x, and the
+     picture starts to soften on exactly the screens this layout is for.
+     Re-measure against the source before raising it. */
+  .portrait-frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 46% 50%;
+    transform: scale(1.4);
+    transform-origin: 46% 32%;
+    filter: saturate(0.92);
+  }
+
+  /* 88px of label plus the handle does not fit 248px. Stacking them is what
+     the phone layout already does with these same rows. */
+  .about-side .contact-list li { flex-direction: column; gap: 0.15rem; }
+  .about-side .contact-list .label { flex: none; }
 }
 
 /* ---------- print ---------- */

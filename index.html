@@ -29,9 +29,11 @@
 <link rel="preload" href="assets/fonts/serif-roman.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="about">
 
 <a class="skip" href="#about">Skip to content</a>
+
+<div class="rail">
 
 <header class="masthead">
   <img class="portrait" src="assets/photo.jpg" alt="Alessio Giorgetta">
@@ -63,6 +65,8 @@
   </button>
 </nav>
 
+</div><!-- .rail -->
+
 <main id="about">
 
 <div class="page-head">
@@ -70,6 +74,10 @@
     <h2 class="page-title">About</h2>
   </div>
 </div>
+
+<div class="about-grid">
+
+<div class="about-prose">
 
   <p>Hi! I'm Alessio, a PhD student in Economics at Stanford.</p>
 
@@ -99,11 +107,32 @@
     California!
   </p>
 
-  <h3 class="subhead subhead--spaced">Social media</h3>
+</div>
+
+<aside class="about-side">
+
+  <!-- The same file the rail carries, shown larger and squarer. No second
+       asset, no second request: the browser already has it cached. -->
+  <div class="portrait-frame">
+    <img src="assets/photo.jpg" alt="Alessio Giorgetta">
+  </div>
+
+  <h2>Fields</h2>
+  <ul class="side-list">
+    <li>Labor Economics</li>
+    <li>Public Economics</li>
+    <li>Organizational Economics</li>
+  </ul>
+
+  <h2>Social media</h2>
   <ul class="contact-list">
     <li><span class="label">X</span> <a href="https://x.com/AlessioGiorget4">@AlessioGiorget4</a></li>
     <li><span class="label">LinkedIn</span> <a href="https://www.linkedin.com/in/alessiogiorgetta03617">alessiogiorgetta</a></li>
   </ul>
+
+</aside>
+
+</div>
 
 </main>
 
