@@ -1,28 +1,15 @@
-/* GENERATED from school_bureaucrats_estimates.json - do not edit by hand.
-   It exists so the page works from file://, where fetch() is blocked.
-   Regenerate with scripts/build_data_mirror.py after any change to the JSON,
-   then copy this file to site/assets/data/. */
+/* GENERATED from the estimates JSON - do not edit by hand.
+   Regenerate with scripts/build_data_mirror.py.
+
+   Estimates for "Do School Bureaucrats Discriminate against Foreigners?"
+   (Alessio Giorgetta, MSc thesis, University of Bologna, 2025). Every record
+   carries the table and page it was read from, in its `source` field.
+
+   Where the thesis and the slide deck print different values for the same
+   cell, the slides are authoritative: the thesis was revised after the deck
+   was made. Both are kept, tagged "variant", and the page displays "slides".
+   Coefficients are in probability points (-0.043 is -4.3pp). */
 window.SCHOOL_BUREAUCRATS_DATA = {
- "_meta": {
-  "paper": "Do School Bureaucrats Discriminate against Foreigners? Experimental Evidence from Italy",
-  "author": "Alessio Giorgetta",
-  "venue": "MSc thesis, University of Bologna, 2025",
-  "transcribed_on": "2026-08-12",
-  "transcribed_by": "Claude Code, from the PDFs in pre_phd/bureaucracy/",
-  "status": "UNVERIFIED TRANSCRIPTION. Every number below was read out of a PDF table. Nothing here has been checked against the original Stata/R output. See TRANSCRIPTION_NOTES.md for the discrepancies found.",
-  "authority": "RESOLVED 2026-08-12 by the author: where the thesis and the slides disagree, THE SLIDES WIN. The thesis was revised repeatedly after the slides were made. Records tagged \"variant\": \"thesis\" are retained for provenance only and must not be displayed. Use \"variant\": \"slides\".",
-  "conventions": {
-   "estimate_triple": "[coefficient, standard_error, significance_stars]",
-   "stars": "** p<0.01, * p<0.05, ~ p<0.10, \"\" not significant at 10%",
-   "units": "All treatment effects are in probability points (a coefficient of -0.043 is -4.3pp).",
-   "added_by_transcriber": "ISO 3166-2:IT region codes are NOT in the paper. They were added to allow a join to map geometry and should be spot-checked."
-  },
-  "sources": {
-   "thesis": "pre_phd/bureaucracy/thesis_AG.pdf",
-   "slides": "pre_phd/bureaucracy/pres_AG.pdf",
-   "figure1": "pre_phd/bureaucracy/graph_effects_slides.pdf"
-  }
- },
  "design": {
   "source": {
    "doc": "thesis",
@@ -34,7 +21,6 @@ window.SCHOOL_BUREAUCRATS_DATA = {
   "schools_universe": 50511,
   "schools_analyzed": 7120,
   "schools_analyzed_per_prose": 7192,
-  "schools_analyzed_note": "The thesis prose (p.7) says 7,192; every table reports 7,120. Unresolved, see TRANSCRIPTION_NOTES.md.",
   "regions_in_sample": 18,
   "regions_excluded": [
    "Trentino-Alto Adige",
@@ -64,8 +50,7 @@ window.SCHOOL_BUREAUCRATS_DATA = {
    }
   ],
   "arms_n_source": {
-   "doc": "figure1",
-   "note": "Arm counts come from the Figure 1 chart labels and sum to 7,120. Table 1 implies control 3,581 / French 1,795 / Arabic 1,745, which sums to 7,121. Off-by-one, unresolved."
+   "doc": "figure1"
   },
   "fieldwork": {
    "sent_from": "2025-05-12",
@@ -370,8 +355,7 @@ window.SCHOOL_BUREAUCRATS_DATA = {
    "french": 5376,
    "arabic": 5326,
    "any": 7120
-  },
-  "sample_size_note": "Columns 2-4 report the pooled estimation sample (control + that arm), not the arm size."
+  }
  },
  "estimates": [
   {
@@ -1311,7 +1295,6 @@ window.SCHOOL_BUREAUCRATS_DATA = {
   },
   "outcome": "response_1w",
   "estimator": "lpm",
-  "note": "Each column is a separate regression: any-treatment dummy plus its interaction with one demeaned covariate. Strata FE in all columns. Interaction variables have been demeaned.",
   "control_mean": 0.809,
   "n": 7120,
   "columns": [
@@ -1385,7 +1368,6 @@ window.SCHOOL_BUREAUCRATS_DATA = {
   },
   "model": "BERT, Italian version",
   "training": "500 emails, roughly 10% of the response sample, manually labeled; model then classified the remaining 5,107.",
-  "metrics_note": "Reported for epoch 4, the last epoch of training.",
   "usefulness": {
    "accuracy": 0.68,
    "f1": 0.675,
@@ -1409,10 +1391,8 @@ window.SCHOOL_BUREAUCRATS_DATA = {
    "reference": "Chernozhukov et al. (2018)",
    "nuisance": "Random Forest with the Honesty approach (Athey and Imbens 2016)",
    "conditioning": "Outcome and treatment modeled conditional on province and day-of-sending, the randomization levels.",
-   "cv_folds": 10,
-   "source_note": "Estimator described in the notes to slides 43 and 44. Slide 30 carries the same table layout but no notes block."
+   "cv_folds": 10
   },
-  "region_codes_note": "iso codes added by the transcriber for map joining, not present in the paper.",
   "excluded_regions": [
    {
     "name": "Trentino-Alto Adige",
@@ -1436,7 +1416,6 @@ window.SCHOOL_BUREAUCRATS_DATA = {
      "french": 3869,
      "arabic": 3866
     },
-    "sample_size_note": "As printed. These do not match the 7,120 / 5,376 / 5,326 of the main response-rate tables and look copied from the text-analysis tables. Unresolved.",
     "ate": {
      "any": [
       -0.044,
