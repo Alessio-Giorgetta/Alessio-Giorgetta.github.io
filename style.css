@@ -715,6 +715,91 @@ a.quiet:hover { color: var(--accent); text-decoration-color: currentColor; }
 .shot--4 { grid-column: 1 / 6; margin-top: 4rem; }
 .shot--5 { grid-column: 8 / 13; }
 
+/* ---------- caption footnotes ----------
+
+   The marker cannot be a <sup>. Captions run at --step--1 (14.4px) and the
+   browser shrinks a superscript to roughly 11px, under the 13px floor the rest
+   of the site holds. So it is set at --step--2 and lifted by hand, with
+   line-height: 0 so the lift contributes no height and the caption's leading
+   stays even.
+
+   The brackets are the non-color signal. Underlining a lone digit reads as
+   damage rather than as a link, and the accent on its own collapses to within
+   1.4:1 of the body ink under simulated protanopia, which is the same reason
+   the nav carries a rule under the current item. */
+
+.fn-ref {
+  font-family: var(--sans);
+  font-size: var(--step--2);
+  font-weight: 600;
+  line-height: 0;
+  position: relative;
+  top: -0.42em;
+  margin-left: 0.12em;
+  white-space: nowrap;
+  text-decoration: none;
+  scroll-margin-top: 5rem;
+}
+
+.fn-ref:hover { text-decoration: underline; text-underline-offset: 2px; }
+
+.notes-section { margin-top: 4rem; }
+
+.notes {
+  list-style: none;
+  counter-reset: note;
+  margin: 0;
+  padding: 0;
+  max-width: var(--measure);
+}
+
+.notes li {
+  counter-increment: note;
+  position: relative;
+  padding: 0.6rem 0.6rem 0.6rem 2.3rem;
+  border-top: 1px solid var(--rule-soft);
+  font-size: var(--step--1);
+  line-height: 1.55;
+  color: var(--ink-soft);
+  scroll-margin-top: 5rem;
+}
+
+.notes li:last-child { border-bottom: 1px solid var(--rule-soft); }
+
+/* The counter sits one step below the note text, so its line-height is
+   computed rather than guessed: the note's line box is 0.9rem x 1.55 =
+   22.32px, which is 1.717 of 13px. Equal line boxes put the two on a shared
+   baseline. */
+.notes li::before {
+  content: "[" counter(note) "]";
+  position: absolute;
+  left: 0;
+  top: 0.6rem;
+  font-family: var(--sans);
+  font-size: var(--step--2);
+  font-weight: 600;
+  line-height: 1.717;
+  color: var(--ink-faint);
+}
+
+/* Landing on a note has to be visible without leaning on hue: --bg to
+   --bg-inset is a lightness change, which survives every color-vision
+   simulation the palette was checked against. */
+.notes li:target {
+  background: var(--bg-inset);
+  border-radius: var(--radius);
+}
+.notes li:target::before { color: var(--accent); }
+
+/* U+2191 rather than the return arrow at U+21A9: the subset fonts carry
+   U+2190-2193 and nothing else in that block, so U+21A9 would drop to a
+   system face. See assets/fonts/README.md before changing this glyph. */
+.fn-back {
+  margin-left: 0.4rem;
+  text-decoration: none;
+}
+.fn-back:hover { text-decoration: underline; text-underline-offset: 2px; }
+
 /* ---------- contact ---------- */
 
 .contact-list { list-style: none; margin: 0; padding: 0; }
@@ -842,6 +927,9 @@ footer p { margin: 0; }
 
 @media print {
   nav, .todo, .todo-inline, .button, .skip, footer a, .theme-toggle { display: none; }
+  /* The marker and the note both stay: on paper that is just a footnote.
+     Only the jump back up is meaningless. */
+  .fn-back { display: none; }
   body { max-width: none; color: #000; background: #fff; padding: 0; }
   a { color: #000; text-decoration: none; }
   .portrait { display: none; }
