@@ -706,8 +706,19 @@ a.quiet:hover { color: var(--accent); text-decoration-color: currentColor; }
   font-size: var(--step--1);
   line-height: 1.5;
   color: var(--ink-soft);
-  max-width: 32ch;
+  /* Was 32ch = 229px. The hiking caption measures 213.3px and its marker 15.1px,
+     so it landed inside that box by 0.7px and the browser broke the marker onto
+     its own line anyway. 34ch = 243px gives it 15px of slack while staying
+     narrower than the 250px column, so the caption still reads as tied to the
+     photo rather than running its full width. */
+  max-width: 34ch;
 }
+
+/* A footnote marker must never be left alone on a line. "[" is an opening
+   bracket, and UAX #14 allows a line break in front of one even when there is
+   no space there, so the marker detaches from its sentence the moment the line
+   is tight. Holding the last word and the marker together moves them as a pair. */
+.fn-hold { white-space: nowrap; }
 
 .shot--1 { grid-column: 1 / 6; }
 .shot--2 { grid-column: 8 / 13; margin-top: 5rem; }
