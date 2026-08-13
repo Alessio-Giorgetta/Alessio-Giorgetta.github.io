@@ -475,6 +475,17 @@ a:hover { text-decoration-color: currentColor; }
   margin: 0 0 0.75rem;
 }
 
+/* The result itself, one line, sitting above the chips. Everything else in
+   the card is metadata and is set in the softer greys; this is the sentence a
+   reader scanning the page should leave with, so it takes full body ink. */
+.proj-lead {
+  font-size: 0.97rem;
+  color: var(--ink);
+  margin: 0 0 0.8rem;
+}
+
+.proj-lead b { font-weight: 600; font-variant-numeric: tabular-nums; }
+
 /* The year was set in --rule, which measured Lc 13.5 in light and Lc 0.0 in
    dark: below the level APCA calls the floor for anything being visible at
    all. Kept as a quiet marginal number, but an actually legible one. */
