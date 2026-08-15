@@ -671,16 +671,6 @@ a.quiet:hover { color: var(--accent); text-decoration-color: currentColor; }
 
 .entry .place .with { display: inline-block; }
 
-.entry ul {
-  margin: 0;
-  padding-left: 1.1rem;
-  color: var(--ink-soft);
-  font-size: 0.97rem;
-}
-
-.entry li { margin-bottom: 0.2rem; }
-.entry li::marker { color: var(--ink-faint); }
-
 .skills { margin: 0; }
 .skills dt {
   font-size: var(--step--2);
