@@ -98,6 +98,10 @@ table.readout { border-collapse: collapse; width: 100%; margin-top: 1.1rem; font
 .readout th, .readout td { text-align: left; padding: 0.4rem 0.6rem; border-bottom: 1px solid var(--rule-soft); vertical-align: top; }
 .readout th { font-size: var(--step--2); color: var(--ink-faint); font-weight: 600; }
 .readout td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+/* nowrap is right for a cell holding one estimate and wrong for a cell holding
+   a sentence of them: unbroken, the classifier row held the table 29px wider
+   than its column on a 500px phone and pushed the page 9px sideways. */
+.readout td.num.wrap { white-space: normal; }
 .readout .spec-cell { display: inline-flex; align-items: center; gap: 0.5rem; }
 details.datatable { margin-top: 0.9rem; font-size: var(--step--1); }
 details.datatable summary { cursor: pointer; color: var(--ink-soft); font-weight: 600; font-size: var(--step--2); }
@@ -207,20 +211,57 @@ details.datatable summary { cursor: pointer; color: var(--ink-soft); font-weight
 .map-legend i { width: 14px; height: 14px; border: 1px solid var(--rule); flex: none; }
 
 /* ---- wide screens ----
-   The rail in style.css hands this page a content column of up to 832px. The
-   figures, the stages and the map want that. The prose around them does not:
-   everything with max-width: none above was written against a 640px column
-   and would run past 100 characters here, so it is capped back to a readable
-   line. See the rail note in style.css. */
+   The rail in style.css hands this page a content column of up to 832px, and
+   every part of the page has to agree on how that is spent. Three rules:
+
+   1. A chart is drawn at one SVG unit per CSS pixel, so it fills the column
+      and its 13px labels render at 13px. See fitW() in the script: before it,
+      the SVG was stretched to the column and every label came out at 16.4px,
+      larger than the body text sitting under it.
+   2. Boxes, tables and figures run the full column, so their edges line up.
+   3. Reading matter stops at 42rem. Where the block draws a rule of its own,
+      the box still spans the column and the padding, not the width, holds the
+      sentence back: the rule has to agree with the figure it closes, the
+      sentence does not. */
 @media screen and (min-width: 64rem) {
-  .experiment-note,
-  .figure-note,
-  .facts,
-  .ate-line,
-  .email { max-width: 42rem; }
-  table.readout { max-width: 46rem; }
+
+  /* The note and the two source links are both front matter, so they share a
+     row instead of stacking into a 672px box under an 832px title rule. */
+  .intro-row {
+    display: grid; grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 2rem; align-items: start;
+    margin-bottom: 2.5rem; /* the gap the chips used to carry on their own */
+  }
+  .intro-row .experiment-note { margin-bottom: 0; }
+  .intro-row .source-chips { margin: 0; }
+
+  /* Full box, held-back text: rule 3 above. */
+  .figure-note { max-width: none; padding-right: calc(100% - 42rem); }
+  .facts, .ate-line { max-width: 42rem; }
+
+  /* The three stages are a fixed drawing, not a chart: at a third of the
+     column each they stood 315px tall and read as decoration. Held at their
+     drawn size, the extra width becomes space between them. */
+  .stage svg { display: block; max-width: 210px; margin: 0 auto; }
+
   /* the map is a shape, not a line of text, so it is allowed to grow */
   .map-box svg { max-width: 30rem; }
+}
+
+/* The specimen and its switch, side by side: the alias you pick and the
+   signature it changes are then in view at the same time.
+
+   Gated higher than the rail for the same reason the About aside is. The
+   picker needs 16rem for "Omar El Haddad · Arabic, T2" to stay on one line,
+   and at 64rem that would leave the email 416px, which is 49 characters of
+   serif. At 70rem it gets 480px and at the 74rem cap 544px, which is exactly
+   --measure. */
+@media screen and (min-width: 70rem) {
+  .email-row {
+    display: grid; grid-template-columns: minmax(0, 1fr) 16rem;
+    column-gap: 2rem; align-items: start;
+  }
+  .alias-picker { flex-direction: column; margin-top: 0; }
 }
 </style>
 </head>
@@ -269,15 +310,19 @@ details.datatable summary { cursor: pointer; color: var(--ink-soft); font-weight
   </div>
 </div>
 
-<div class="experiment-note">
-  <strong>This page is an experiment</strong>, inspired by a tweet from MIT Sloan professor
-  <a href="https://www.annastansbury.com">Anna Stansbury</a>: what can a paper be when it
-  isn't a PDF? Check out below my (admittedly experimental) answer to that question!
-</div>
+<div class="intro-row">
 
-<div class="chips source-chips">
-  <a class="chip" href="assets/papers/Giorgetta_School_Bureaucrats.pdf" target="_blank" rel="noopener">Paper (PDF)</a>
-  <a class="chip" href="assets/papers/Giorgetta_School_Bureaucrats_slides.pdf" target="_blank" rel="noopener">Slides</a>
+  <div class="experiment-note">
+    <strong>This page is an experiment</strong>, inspired by a tweet from MIT Sloan professor
+    <a href="https://www.annastansbury.com">Anna Stansbury</a>: what can a paper be when it
+    isn't a PDF? Check out below my (admittedly experimental) answer to that question!
+  </div>
+
+  <div class="chips source-chips">
+    <a class="chip" href="assets/papers/Giorgetta_School_Bureaucrats.pdf" target="_blank" rel="noopener">Paper (PDF)</a>
+    <a class="chip" href="assets/papers/Giorgetta_School_Bureaucrats_slides.pdf" target="_blank" rel="noopener">Slides</a>
+  </div>
+
 </div>
 
 <!-- ============ PANEL 1 ============ -->
@@ -288,28 +333,32 @@ details.datatable summary { cursor: pointer; color: var(--ink-soft); font-weight
     Every school received an identical inquiry about enrollment. Only the sender's name changed.
   </p>
 
-  <div class="email" id="email">
-    <div class="from">To: the administrative office · Subject: Enrollment inquiry</div>
-    <p>Good morning, my name is <span class="slot" id="slot-a">Matteo Conti</span>.
-      I will move to Bologna next year with my family. I would like to ask when the
-      administrative office is open because I would like to ask some questions about
-      how to enroll my son.</p>
-    <p>Do I need an appointment? Are you only open during weekdays? By chance, do you
-      have afternoon activities? Are there income requirements to join them or to have
-      reductions of the cost?</p>
-    <p>Thank you,<br><span class="slot" id="slot-b">Matteo Conti</span></p>
-  </div>
+  <div class="email-row">
 
-  <div class="alias-picker" role="group" aria-label="Choose the sender alias">
-    <button class="alias" type="button" data-arm="ctrl" aria-pressed="true">
-      <span class="mark ctrl"></span> Matteo Conti · control
-    </button>
-    <button class="alias" type="button" data-arm="fr" aria-pressed="false">
-      <span class="mark fr"></span> Antoine Lambert · French, T1
-    </button>
-    <button class="alias" type="button" data-arm="ar" aria-pressed="false">
-      <span class="mark ar"></span> Omar El Haddad · Arabic, T2
-    </button>
+    <div class="email" id="email">
+      <div class="from">To: the administrative office · Subject: Enrollment inquiry</div>
+      <p>Good morning, my name is <span class="slot" id="slot-a">Matteo Conti</span>.
+        I will move to Bologna next year with my family. I would like to ask when the
+        administrative office is open because I would like to ask some questions about
+        how to enroll my son.</p>
+      <p>Do I need an appointment? Are you only open during weekdays? By chance, do you
+        have afternoon activities? Are there income requirements to join them or to have
+        reductions of the cost?</p>
+      <p>Thank you,<br><span class="slot" id="slot-b">Matteo Conti</span></p>
+    </div>
+
+    <div class="alias-picker" role="group" aria-label="Choose the sender alias">
+      <button class="alias" type="button" data-arm="ctrl" aria-pressed="true">
+        <span class="mark ctrl"></span> Matteo Conti · control
+      </button>
+      <button class="alias" type="button" data-arm="fr" aria-pressed="false">
+        <span class="mark fr"></span> Antoine Lambert · French, T1
+      </button>
+      <button class="alias" type="button" data-arm="ar" aria-pressed="false">
+        <span class="mark ar"></span> Omar El Haddad · Arabic, T2
+      </button>
+    </div>
+
   </div>
 
   <p class="figure-note">
@@ -468,7 +517,7 @@ details.datatable summary { cursor: pointer; color: var(--ink-soft); font-weight
         hours are missing.</td></tr>
       <tr><th>Polite</th><td>Includes openings and greetings, uses the formal Lei or Voi
         form, no capslock.</td></tr>
-      <tr><th>Classifier</th><td class="num">Usefulness: accuracy 0.680 · F1 0.675 ·
+      <tr><th>Classifier</th><td class="num wrap">Usefulness: accuracy 0.680 · F1 0.675 ·
         precision 0.684 · recall 0.680.<br>Politeness: accuracy 0.88 · F1 0.874 ·
         precision 0.883 · recall 0.88.</td></tr>
     </table>
@@ -549,6 +598,21 @@ function fmtPct(x) { return (x * 100).toFixed(1) + '%'; }
 function ci(coef, se) { return [coef - Z * se, coef + Z * se]; }
 function el(q, root) { return (root || document).querySelector(q); }
 function els(q, root) { return Array.prototype.slice.call((root || document).querySelectorAll(q)); }
+
+/* Every chart below is drawn into a viewBox and then stretched to its box, so
+   the whole drawing scales with the column: labels included. That was fine
+   while the column was 640px and the drawings were 660 units wide, and stopped
+   being fine when the rail gave this page 832px, because a 13px label came out
+   at 16.4px, bigger than the body text around it.
+   So the drawing is measured to the box instead of stretched to it: the
+   viewBox is as many units wide as the box is CSS pixels, and one unit renders
+   as one pixel. Below the design width the old behavior is kept, i.e. the
+   drawing scales down rather than being cramped, which is what a phone gets. */
+var DESIGN_W = 660;
+function fitW(node) {
+  var w = node ? Math.round(node.getBoundingClientRect().width) : 0;
+  return Math.max(DESIGN_W, w);
+}
 
 var ARMS = [
   { id: 'any',    label: 'Any treatment', hue: 'var(--ink)' },
@@ -717,7 +781,11 @@ function levelsSVG(m, mode) {
   var plotW = W - padL - LV.padR, plotH = H - padT - LV.padB;
   var dom = mode === 'bars' ? [0, 1] : [0.65, 0.85];
   function y(v) { return padT + plotH * (1 - (v - dom[0]) / (dom[1] - dom[0])); }
-  var mid = padL + plotW / 2, gap = 150;
+  /* Never tighter than the 150 units the chart was drawn at, wider when the
+     column gives the plot room: otherwise the three arms huddle in the middle
+     of an 832px canvas. Below the design width this is still a flat 150, so a
+     phone renders exactly what it rendered before. */
+  var mid = padL + plotW / 2, gap = Math.max(150, plotW * 0.25);
   var xs = [mid - gap, mid, mid + gap];
 
   var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Response rates within one week by arm">';
@@ -738,7 +806,7 @@ function levelsSVG(m, mode) {
              ' [' + fmt1(c[0] * 100) + ', ' + fmt1(c[1] * 100) + ']';
     }
     if (mode === 'bars') {
-      var w = 24, x0 = cx - w / 2, yTop = y(v), r = 4;
+      var w = Math.round(24 * W / 660), x0 = cx - w / 2, yTop = y(v), r = 4;
       s += '<g><title>' + tip + '</title>';
       s += '<path d="M' + x0 + ',' + y(0) + ' V' + (yTop + r) +
            ' Q' + x0 + ',' + yTop + ' ' + (x0 + r) + ',' + yTop +
@@ -1012,6 +1080,7 @@ function initCharts(data) {
 
   var lvMode = 'bars';
   function drawLevels() {
+    LV.W = fitW(el('#levels-fig'));
     el('#levels-fig').innerHTML = levelsSVG(lm, lvMode);
     el('#levels-note').innerHTML = lvMode === 'bars'
       ? 'Levels are the control mean plus the LPM effect with no controls (Table 2); ' +
@@ -1086,6 +1155,7 @@ function initCharts(data) {
   function drawCoef() {
     var specs = [{ style: 'A', spec: state.A }];
     if (state.bOn) specs.push({ style: 'B', spec: state.B });
+    CF.W = fitW(el('#coef-fig'));
     el('#coef-fig').innerHTML = coefSVG(idx, specs);
     syncCard('A'); syncCard('B');
     els('button[data-b]').forEach(function (b) {
@@ -1116,6 +1186,7 @@ function initCharts(data) {
   var nidx = nlpIndex(data);
   var nlpEst = 'lpm';
   function drawNLP() {
+    NLP.W = fitW(el('#nlp-fig'));
     el('#nlp-fig').innerHTML = nlpSVG(nidx, nlpEst);
     els('#nlp-toggle button').forEach(function (b) {
       b.setAttribute('aria-pressed', String(b.dataset.nlpest === nlpEst));
@@ -1143,6 +1214,17 @@ function initCharts(data) {
   drawLevels();
   drawCoef();
   drawNLP();
+
+  /* The three charts are sized to their box, so a box that changes size has to
+     redraw. Width only: a phone firing resize on every address-bar scroll, or
+     on rotation into the same width, should not repaint three figures. */
+  var lastW = window.innerWidth, redrawTimer = null;
+  window.addEventListener('resize', function () {
+    if (window.innerWidth === lastW) return;
+    lastW = window.innerWidth;
+    clearTimeout(redrawTimer);
+    redrawTimer = setTimeout(function () { drawLevels(); drawCoef(); drawNLP(); }, 150);
+  });
 }
 
 function initMap(data, geo) {
