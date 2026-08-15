@@ -54,19 +54,14 @@
 .experiment-note {
   border: 1px solid var(--rule); border-left: 3px solid var(--accent);
   background: var(--bg-inset); border-radius: var(--radius);
-  padding: 0.7rem 0.9rem; margin: 0 0 2.5rem;
+  padding: 0.7rem 0.9rem; margin: 0 0 1rem;
   font-size: var(--step--1); color: var(--ink-soft); max-width: none;
 }
 
-/* The result, before any of the apparatus that produced it. A reader who gets
-   no further than this paragraph should still leave with the finding. Set one
-   step above body so it reads as a standfirst rather than a first paragraph. */
-.standfirst {
-  font-size: var(--step-1); line-height: 1.5; color: var(--ink-soft);
-  margin: 0 0 1.6rem; max-width: 38rem;
-}
-
-.standfirst b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+/* This page is the only route some readers will have to the thesis itself, so
+   the PDF and the deck sit directly under the note rather than being buried in
+   the prose. Same chip vocabulary as the cards on research.html. */
+.source-chips { margin: 0 0 2.5rem; }
 .panel { margin: 0 0 3.5rem; }
 .eyebrow {
   font-size: var(--step--2); text-transform: uppercase; letter-spacing: 0.08em;
@@ -274,23 +269,15 @@ details.datatable summary { cursor: pointer; color: var(--ink-soft); font-weight
   </div>
 </div>
 
-<p class="standfirst">
-  7,120 Italian state schools received the same enrollment enquiry, signed with an Italian,
-  a French or an Arabic name. Both foreign signatures got fewer replies, and they did not
-  fare alike: the French name loses <b>6.0</b> points of the control group's <b>80.9%</b>
-  response rate, the Arabic name <b>2.5</b>. Equality of the two is rejected,
-  <b>p = 0.012</b>.
-</p>
-
 <div class="experiment-note">
   <strong>This page is an experiment</strong>, inspired by a tweet from MIT Sloan professor
   <a href="https://www.annastansbury.com">Anna Stansbury</a>: what can a paper be when it
-  isn't a PDF? Every estimate below is read from the tables of the thesis and the slide
-  deck that went with it, and each panel names the table it came from. Where the two
-  disagree, the slides are authoritative, since the thesis was revised after the deck was
-  made. The
-  <a href="assets/papers/Giorgetta_School_Bureaucrats.pdf" target="_blank" rel="noopener">paper</a>
-  stays the citable version.
+  isn't a PDF? Check out below my (admittedly experimental) answer to that question!
+</div>
+
+<div class="chips source-chips">
+  <a class="chip" href="assets/papers/Giorgetta_School_Bureaucrats.pdf" target="_blank" rel="noopener">Paper (PDF)</a>
+  <a class="chip" href="assets/papers/Giorgetta_School_Bureaucrats_slides.pdf" target="_blank" rel="noopener">Slides</a>
 </div>
 
 <!-- ============ PANEL 1 ============ -->
