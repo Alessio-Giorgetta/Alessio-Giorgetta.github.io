@@ -218,26 +218,23 @@ details.datatable summary { cursor: pointer; color: var(--ink-soft); font-weight
       and its 13px labels render at 13px. See fitW() in the script: before it,
       the SVG was stretched to the column and every label came out at 16.4px,
       larger than the body text sitting under it.
-   2. Boxes, tables and figures run the full column, so their edges line up.
-   3. Reading matter stops at 42rem. Where the block draws a rule of its own,
-      the box still spans the column and the padding, not the width, holds the
-      sentence back: the rule has to agree with the figure it closes, the
-      sentence does not. */
+   2. Nothing is left with empty column beside it. A block either takes the
+      whole width or shares its row with something that reaches the far edge.
+      The site measure of 34rem stops a paragraph two thirds of the way across
+      832px, which is what made the page read as a strip of text.
+   3. A line that long has to be paid for, and the only thing that pays for it
+      is leading. Both the lede and the notes get more of it here than the site
+      default: the wider the column, the further the eye travels back to find
+      the start of the next line, and the more space it needs to land on the
+      right one. Two columns were the other way to spend the width, and they
+      are wrong here: a one-line note under a chart would sit in a 396px box
+      with the other half of the row empty, which is the thing being fixed. */
 @media screen and (min-width: 64rem) {
 
-  /* The note and the two source links are both front matter, so they share a
-     row instead of stacking into a 672px box under an 832px title rule. */
-  .intro-row {
-    display: grid; grid-template-columns: minmax(0, 1fr) auto;
-    column-gap: 2rem; align-items: start;
-    margin-bottom: 2.5rem; /* the gap the chips used to carry on their own */
-  }
-  .intro-row .experiment-note { margin-bottom: 0; }
-  .intro-row .source-chips { margin: 0; }
-
-  /* Full box, held-back text: rule 3 above. */
-  .figure-note { max-width: none; padding-right: calc(100% - 42rem); }
-  .facts, .ate-line { max-width: 42rem; }
+  /* Reading matter takes the column it is given. */
+  .lede { max-width: none; line-height: 1.75; }
+  .figure-note { max-width: none; line-height: 1.7; }
+  .facts, .ate-line { max-width: none; }
 
   /* The three stages are a fixed drawing, not a chart: at a third of the
      column each they stood 315px tall and read as decoration. Held at their
@@ -248,19 +245,26 @@ details.datatable summary { cursor: pointer; color: var(--ink-soft); font-weight
   .map-box svg { max-width: 30rem; }
 }
 
-/* The specimen and its switch, side by side: the alias you pick and the
-   signature it changes are then in view at the same time.
+/* Two rows carry a control on the right: the source links beside the note,
+   the alias picker beside the email, so the alias you pick and the signature
+   it changes are in view at the same time. They share one grid, which is what
+   makes the two boxes the same width and lands both controls on the same edge
+   as the rule under the title.
 
    Gated higher than the rail for the same reason the About aside is. The
    picker needs 16rem for "Omar El Haddad · Arabic, T2" to stay on one line,
-   and at 64rem that would leave the email 416px, which is 49 characters of
+   and at 64rem that would leave the email 384px, which is 45 characters of
    serif. At 70rem it gets 480px and at the 74rem cap 544px, which is exactly
-   --measure. */
+   --measure. Below 70rem both rows stack and both boxes take the full
+   column, so the page is never left with a short box and empty space. */
 @media screen and (min-width: 70rem) {
-  .email-row {
+  .intro-row, .email-row {
     display: grid; grid-template-columns: minmax(0, 1fr) 16rem;
     column-gap: 2rem; align-items: start;
   }
+  .intro-row { margin-bottom: 2.5rem; } /* the gap the chips carried alone */
+  .intro-row .experiment-note { margin-bottom: 0; }
+  .intro-row .source-chips { margin: 0; justify-self: end; }
   .alias-picker { flex-direction: column; margin-top: 0; }
 }
 </style>
